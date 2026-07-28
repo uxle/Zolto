@@ -57,7 +57,7 @@
   "author": "Zolto Team",
   "license": "MIT",
   "devDependencies": {
-    "eslint": "^10.6.0",
+    "eslint": "^10.8.0",
     "prettier": "^3.0.0",
     "serve": "^14.0.0",
     "pkg": "^5.8.1"
