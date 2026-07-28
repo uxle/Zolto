@@ -1,0 +1,40 @@
+---
+title: Zolto Technical Keynote — Phase 8
+author: Zolto Architecture Team
+date: 2026-07-26
+---
+
+@presentation theme="pitch-dark" ratio="16:9"
+  @slide type="title"
+    # Zolto 8.0.0
+    ### Next-Generation Document & Visualization Language
+  @/slide
+
+  @slide type="content"
+    ## Architecture Overview
+    - **100% Markdown Superset** — Every valid `.md` is a valid `.zl`
+    - **Zero Dependencies** — Native Math, Diagrams, Charts, Vectors & Layout
+    - **High Performance** — 732/732 tests passing in < 100ms
+  @/slide
+
+  @slide type="comparison"
+    ## Native Subsystem Comparison
+
+    @grid columns=2 gap=24
+      @cell
+        ### Vector Graphics (`@vector`)
+        Declarative scene graph with Bezier curves, layers, and SVG export.
+      @/cell
+
+      @cell
+        ### Spatial Layout (`@layout`)
+        Responsive CSS grid, flexbox, canvas layers, multi-page print & slides.
+      @/cell
+    @/grid
+  @/slide
+
+  @slide type="section"
+    # End of Keynote
+    ### Thank You for Using Zolto
+  @/slide
+@/presentation

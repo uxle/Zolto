@@ -1,0 +1,63 @@
+---
+title: Real-Time Operations Dashboard — Phase 8
+author: Analytics Team
+date: 2026-07-26
+---
+
+# Executive Operations Dashboard
+
+> [!NOTE]
+> Powered by Zolto Phase 8 Spatial Layout Engine (`@layout`, `@grid`, `@flex`, `@chart`, `@vector`).
+
+---
+
+@layout width=100% padding=24 gap=20 theme="dark"
+  @header
+    ## Infrastructure Overview
+  @/header
+
+  @grid columns=12 gap=16
+    @cell span=3
+      @card title="Active Nodes" variant="success"
+        1,024 Clusters Online
+      @/card
+    @/cell
+    @cell span=3
+      @card title="Global Traffic" variant="info"
+        4.2 TB/s Ingress
+      @/card
+    @/cell
+    @cell span=3
+      @card title="Error Rate" variant="default"
+        0.0012% HTTP 5xx
+      @/card
+    @/cell
+    @cell span=3
+      @card title="Avg Latency" variant="success"
+        14.2 ms Worldwide
+      @/card
+    @/cell
+
+    @cell span=8
+      ### Traffic Throughput
+      @chart spline title="Ingress vs Egress (GB/s)"
+      labels: 00:00 04:00 08:00 12:00 16:00 20:00
+      data: 210 180 450 890 920 640
+      @/chart
+    @/cell
+
+    @cell span=4
+      ### Cluster Topology
+      @diagram flowchart
+      node API [label="API Gateway"]
+      node Auth [label="Auth Service"]
+      node DB [label="Primary DB"]
+      API -> Auth -> DB
+      @/diagram
+    @/cell
+  @/grid
+
+  @footer
+    Zolto v8.0.0 · Zero External Dependencies
+  @/footer
+@/layout

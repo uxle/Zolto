@@ -1,0 +1,1215 @@
+/* ==========================================================================
+   Zolto Custom Theme Template (Phase 8 Master Edition)
+   ==========================================================================
+   This is an exhaustive, 1000+ line master CSS template for creating 
+   custom themes in Zolto. It exposes the entire spectrum of CSS variables,
+   selectors, component overrides, dark modes, animations, print layouts,
+   and visual presets across all 8 phases of the Zolto engine:
+
+   - Phase 1: Core Markdown & Rich Text Formatting
+   - Phase 2: Extended Markdown & Document Extensions
+   - Phase 3: Directives, Cards & UI Components
+   - Phase 4: Mathematical Equations & LaTeX Rendering
+   - Phase 5: Vector Diagram Engine (Flowcharts, Sequence, State, ER, etc.)
+   - Phase 6: Interactive Chart & Data Visualization Engine
+   - Phase 7: Resolution-Independent Vector Graphics Engine
+   - Phase 8: Spatial Layout, Canvas & Slide Presentation Engine
+
+   Usage Instructions:
+   1. Copy or rename this file to match your theme name (e.g. `oceanic.css`).
+   2. Replace `[data-theme="custom-theme-template"]` with your theme selector
+      (e.g., `[data-theme="oceanic"]` or `.zl-theme-oceanic`).
+   3. Modify the CSS Custom Properties (variables) in Section 1 & 2.
+   4. Customize component-specific selectors in Sections 3 through 18.
+   ========================================================================== */
+
+/* ==========================================================================
+   SECTION 1: THEME SCOPE & ROOT TOKEN DEFINITIONS
+   ========================================================================== */
+
+[data-theme="custom-theme-template"],
+.zl-theme-custom-template {
+
+  /* ------------------------------------------------------------------------
+     1.1 BRAND COLOR PALETTE (RGB & HSL CONVERTIBLE)
+     ------------------------------------------------------------------------ */
+  /* Primary Brand Color */
+  --zl-color-primary-h: 217;
+  --zl-color-primary-s: 91%;
+  --zl-color-primary-l: 60%;
+  --zl-color-primary: hsl(var(--zl-color-primary-h), var(--zl-color-primary-s), var(--zl-color-primary-l));
+  --zl-color-primary-rgb: 59, 130, 246;
+  --zl-color-primary-hover: hsl(var(--zl-color-primary-h), var(--zl-color-primary-s), 50%);
+  --zl-color-primary-active: hsl(var(--zl-color-primary-h), var(--zl-color-primary-s), 40%);
+  --zl-color-primary-light: hsl(var(--zl-color-primary-h), 100%, 97%);
+  --zl-color-primary-dark: hsl(var(--zl-color-primary-h), 80%, 30%);
+  --zl-color-primary-contrast: #ffffff;
+
+  /* Secondary Brand Color */
+  --zl-color-secondary-h: 262;
+  --zl-color-secondary-s: 83%;
+  --zl-color-secondary-l: 58%;
+  --zl-color-secondary: hsl(var(--zl-color-secondary-h), var(--zl-color-secondary-s), var(--zl-color-secondary-l));
+  --zl-color-secondary-rgb: 139, 92, 246;
+  --zl-color-secondary-hover: hsl(var(--zl-color-secondary-h), var(--zl-color-secondary-s), 48%);
+  --zl-color-secondary-active: hsl(var(--zl-color-secondary-h), var(--zl-color-secondary-s), 38%);
+  --zl-color-secondary-light: hsl(var(--zl-color-secondary-h), 100%, 97%);
+  --zl-color-secondary-dark: hsl(var(--zl-color-secondary-h), 80%, 30%);
+  --zl-color-secondary-contrast: #ffffff;
+
+  /* Accent & Highlight Color */
+  --zl-color-accent-h: 347;
+  --zl-color-accent-s: 89%;
+  --zl-color-accent-l: 60%;
+  --zl-color-accent: hsl(var(--zl-color-accent-h), var(--zl-color-accent-s), var(--zl-color-accent-l));
+  --zl-color-accent-rgb: 244, 63, 94;
+  --zl-color-accent-hover: hsl(var(--zl-color-accent-h), var(--zl-color-accent-s), 50%);
+  --zl-color-accent-light: hsl(var(--zl-color-accent-h), 100%, 97%);
+  --zl-color-accent-contrast: #ffffff;
+
+  /* Status Colors */
+  --zl-color-success: #10b981;
+  --zl-color-success-rgb: 16, 185, 129;
+  --zl-color-success-bg: #ecfdf5;
+  --zl-color-success-border: #a7f3d0;
+  --zl-color-success-text: #065f46;
+
+  --zl-color-warning: #f59e0b;
+  --zl-color-warning-rgb: 245, 158, 11;
+  --zl-color-warning-bg: #fffbeb;
+  --zl-color-warning-border: #fde68a;
+  --zl-color-warning-text: #92400e;
+
+  --zl-color-error: #ef4444;
+  --zl-color-error-rgb: 239, 68, 68;
+  --zl-color-error-bg: #fef2f2;
+  --zl-color-error-border: #fecaca;
+  --zl-color-error-text: #991b1b;
+
+  --zl-color-info: #0ea5e9;
+  --zl-color-info-rgb: 14, 165, 233;
+  --zl-color-info-bg: #f0f9ff;
+  --zl-color-info-border: #bae6fd;
+  --zl-color-info-text: #075985;
+
+  /* Neutral Surface & Background Colors */
+  --zl-color-bg: #ffffff;
+  --zl-color-bg-rgb: 255, 255, 255;
+  --zl-color-bg-alt: #f8fafc;
+  --zl-color-bg-subtle: #f1f5f9;
+  --zl-color-surface: #ffffff;
+  --zl-color-surface-hover: #f8fafc;
+  --zl-color-surface-active: #f1f5f9;
+
+  /* Border Colors */
+  --zl-color-border-subtle: #f1f5f9;
+  --zl-color-border: #e2e8f0;
+  --zl-color-border-hover: #cbd5e1;
+  --zl-color-border-strong: #94a3b8;
+  --zl-color-focus-ring: rgba(59, 130, 246, 0.4);
+
+  /* Text Colors */
+  --zl-color-text-main: #0f172a;
+  --zl-color-text-body: #334155;
+  --zl-color-text-muted: #64748b;
+  --zl-color-text-subtle: #94a3b8;
+  --zl-color-text-disabled: #cbd5e1;
+  --zl-color-text-inverse: #ffffff;
+
+  /* ------------------------------------------------------------------------
+     1.2 TYPOGRAPHY & FONT SCALING TOKENS
+     ------------------------------------------------------------------------ */
+  --zl-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --zl-font-serif: 'Merriweather', 'Georgia', Cambria, 'Times New Roman', Times, serif;
+  --zl-font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Source Code Pro', Menlo, Monaco, Consolas, monospace;
+  --zl-font-display: 'Outfit', 'Inter', sans-serif;
+  --zl-font-math: 'KaTeX_Math', 'Latin Modern Math', 'Cambria Math', serif;
+
+  /* Modular Scale (1.25 Major Third) */
+  --zl-font-size-3xs: 0.625rem;  /* 10px */
+  --zl-font-size-2xs: 0.75rem;   /* 12px */
+  --zl-font-size-xs: 0.8125rem;  /* 13px */
+  --zl-font-size-sm: 0.875rem;   /* 14px */
+  --zl-font-size-base: 1rem;     /* 16px */
+  --zl-font-size-md: 1.125rem;   /* 18px */
+  --zl-font-size-lg: 1.25rem;    /* 20px */
+  --zl-font-size-xl: 1.5rem;     /* 24px */
+  --zl-font-size-2xl: 1.875rem;  /* 30px */
+  --zl-font-size-3xl: 2.25rem;   /* 36px */
+  --zl-font-size-4xl: 3rem;      /* 48px */
+  --zl-font-size-5xl: 3.75rem;   /* 60px */
+  --zl-font-size-6xl: 4.5rem;    /* 72px */
+
+  /* Line Heights */
+  --zl-line-height-none: 1;
+  --zl-line-height-tight: 1.2;
+  --zl-line-height-snug: 1.375;
+  --zl-line-height-base: 1.6;
+  --zl-line-height-relaxed: 1.75;
+  --zl-line-height-loose: 2;
+
+  /* Font Weights */
+  --zl-font-weight-thin: 100;
+  --zl-font-weight-extralight: 200;
+  --zl-font-weight-light: 300;
+  --zl-font-weight-normal: 400;
+  --zl-font-weight-medium: 500;
+  --zl-font-weight-semibold: 600;
+  --zl-font-weight-bold: 700;
+  --zl-font-weight-extrabold: 800;
+  --zl-font-weight-black: 900;
+
+  /* Letter Spacing */
+  --zl-tracking-tighter: -0.05em;
+  --zl-tracking-tight: -0.025em;
+  --zl-tracking-normal: 0em;
+  --zl-tracking-wide: 0.025em;
+  --zl-tracking-wider: 0.05em;
+  --zl-tracking-widest: 0.1em;
+
+  /* ------------------------------------------------------------------------
+     1.3 SPACING, RADIUS & ELEVATION SHADOWS
+     ------------------------------------------------------------------------ */
+  --zl-spacing-0: 0px;
+  --zl-spacing-0-5: 0.125rem; /* 2px */
+  --zl-spacing-1: 0.25rem;   /* 4px */
+  --zl-spacing-1-5: 0.375rem; /* 6px */
+  --zl-spacing-2: 0.5rem;    /* 8px */
+  --zl-spacing-2-5: 0.625rem;/* 10px */
+  --zl-spacing-3: 0.75rem;   /* 12px */
+  --zl-spacing-3-5: 0.875rem;/* 14px */
+  --zl-spacing-4: 1rem;      /* 16px */
+  --zl-spacing-5: 1.25rem;   /* 20px */
+  --zl-spacing-6: 1.5rem;    /* 24px */
+  --zl-spacing-7: 1.75rem;   /* 28px */
+  --zl-spacing-8: 2rem;      /* 32px */
+  --zl-spacing-9: 2.25rem;   /* 36px */
+  --zl-spacing-10: 2.5rem;   /* 40px */
+  --zl-spacing-12: 3rem;     /* 48px */
+  --zl-spacing-14: 3.5rem;   /* 56px */
+  --zl-spacing-16: 4rem;     /* 64px */
+  --zl-spacing-20: 5rem;     /* 80px */
+  --zl-spacing-24: 6rem;     /* 96px */
+
+  /* Border Radii */
+  --zl-radius-none: 0px;
+  --zl-radius-2xs: 0.125rem; /* 2px */
+  --zl-radius-xs: 0.25rem;   /* 4px */
+  --zl-radius-sm: 0.375rem;  /* 6px */
+  --zl-radius-md: 0.5rem;    /* 8px */
+  --zl-radius-lg: 0.75rem;   /* 12px */
+  --zl-radius-xl: 1rem;      /* 16px */
+  --zl-radius-2xl: 1.5rem;   /* 24px */
+  --zl-radius-3xl: 2rem;     /* 32px */
+  --zl-radius-full: 9999px;
+
+  /* Box Shadows & Elevation */
+  --zl-shadow-color: 220 3% 15%;
+  --zl-shadow-xs: 0 1px 2px 0 rgba(var(--zl-shadow-color), 0.05);
+  --zl-shadow-sm: 0 1px 3px 0 rgba(var(--zl-shadow-color), 0.1), 0 1px 2px -1px rgba(var(--zl-shadow-color), 0.1);
+  --zl-shadow-md: 0 4px 6px -1px rgba(var(--zl-shadow-color), 0.1), 0 2px 4px -2px rgba(var(--zl-shadow-color), 0.1);
+  --zl-shadow-lg: 0 10px 15px -3px rgba(var(--zl-shadow-color), 0.1), 0 4px 6px -4px rgba(var(--zl-shadow-color), 0.1);
+  --zl-shadow-xl: 0 20px 25px -5px rgba(var(--zl-shadow-color), 0.1), 0 8px 10px -6px rgba(var(--zl-shadow-color), 0.1);
+  --zl-shadow-2xl: 0 25px 50px -12px rgba(var(--zl-shadow-color), 0.25);
+  --zl-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+  --zl-shadow-glow: 0 0 20px rgba(var(--zl-color-primary-rgb), 0.35);
+
+  /* Animation Timings & Curves */
+  --zl-ease-linear: linear;
+  --zl-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --zl-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --zl-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --zl-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --zl-duration-fast: 150ms;
+  --zl-duration-normal: 250ms;
+  --zl-duration-slow: 400ms;
+  --zl-duration-slower: 700ms;
+
+  /* Z-Index Layers */
+  --zl-z-background: -10;
+  --zl-z-base: 0;
+  --zl-z-content: 10;
+  --zl-z-sticky: 100;
+  --zl-z-fixed: 200;
+  --zl-z-overlay: 300;
+  --zl-z-modal: 400;
+  --zl-z-popover: 500;
+  --zl-z-tooltip: 600;
+}
+
+/* ==========================================================================
+   SECTION 2: COMPONENT & DOMAIN SPECIFIC TOKENS
+   ========================================================================== */
+
+[data-theme="custom-theme-template"],
+.zl-theme-custom-template {
+
+  /* ------------------------------------------------------------------------
+     2.1 MARKDOWN & RICH TEXT TOKENS (PHASES 1 & 2)
+     ------------------------------------------------------------------------ */
+  --zl-markdown-max-width: 68rem;
+  --zl-markdown-font: var(--zl-font-sans);
+  --zl-markdown-color: var(--zl-color-text-body);
+  --zl-markdown-line-height: var(--zl-line-height-relaxed);
+
+  --zl-heading-font: var(--zl-font-display);
+  --zl-heading-color: var(--zl-color-text-main);
+  --zl-heading-weight: var(--zl-font-weight-bold);
+  --zl-heading-letter-spacing: var(--zl-tracking-tight);
+
+  --zl-link-color: var(--zl-color-primary);
+  --zl-link-hover-color: var(--zl-color-primary-hover);
+  --zl-link-decoration: none;
+  --zl-link-hover-decoration: underline;
+
+  --zl-blockquote-bg: var(--zl-color-bg-alt);
+  --zl-blockquote-border: var(--zl-color-primary);
+  --zl-blockquote-color: var(--zl-color-text-muted);
+  --zl-blockquote-font: var(--zl-font-serif);
+  --zl-blockquote-padding: var(--zl-spacing-4) var(--zl-spacing-6);
+
+  --zl-code-font: var(--zl-font-mono);
+  --zl-inline-code-bg: var(--zl-color-bg-subtle);
+  --zl-inline-code-color: var(--zl-color-accent);
+  --zl-inline-code-border: var(--zl-color-border);
+
+  --zl-code-block-bg: #0f172a;
+  --zl-code-block-color: #f8fafc;
+  --zl-code-block-border: #1e293b;
+  --zl-code-block-radius: var(--zl-radius-lg);
+
+  --zl-table-border-color: var(--zl-color-border);
+  --zl-table-header-bg: var(--zl-color-bg-alt);
+  --zl-table-header-color: var(--zl-color-text-main);
+  --zl-table-row-stripe-bg: rgba(0, 0, 0, 0.015);
+  --zl-table-hover-bg: rgba(59, 130, 246, 0.04);
+
+  /* ------------------------------------------------------------------------
+     2.2 DIRECTIVE & CARD TOKENS (PHASE 3)
+     ------------------------------------------------------------------------ */
+  --zl-card-bg: var(--zl-color-surface);
+  --zl-card-border: var(--zl-color-border);
+  --zl-card-radius: var(--zl-radius-lg);
+  --zl-card-shadow: var(--zl-shadow-md);
+  --zl-card-padding: var(--zl-spacing-6);
+  --zl-card-header-bg: transparent;
+
+  --zl-callout-info-bg: var(--zl-color-info-bg);
+  --zl-callout-info-border: var(--zl-color-info-border);
+  --zl-callout-info-text: var(--zl-color-info-text);
+
+  --zl-callout-warning-bg: var(--zl-color-warning-bg);
+  --zl-callout-warning-border: var(--zl-color-warning-border);
+  --zl-callout-warning-text: var(--zl-color-warning-text);
+
+  --zl-callout-error-bg: var(--zl-color-error-bg);
+  --zl-callout-error-border: var(--zl-color-error-border);
+  --zl-callout-error-text: var(--zl-color-error-text);
+
+  --zl-callout-success-bg: var(--zl-color-success-bg);
+  --zl-callout-success-border: var(--zl-color-success-border);
+  --zl-callout-success-text: var(--zl-color-success-text);
+
+  /* ------------------------------------------------------------------------
+     2.3 MATH ENGINE TOKENS (PHASE 4)
+     ------------------------------------------------------------------------ */
+  --zl-math-color: var(--zl-color-text-main);
+  --zl-math-font: var(--zl-font-math);
+  --zl-math-size: 1.1em;
+  --zl-math-display-margin: var(--zl-spacing-6) 0;
+  --zl-math-display-bg: rgba(248, 250, 252, 0.5);
+  --zl-math-display-border: var(--zl-color-border-subtle);
+  --zl-math-number-color: var(--zl-color-text-muted);
+  --zl-math-error-color: var(--zl-color-error);
+  --zl-math-error-bg: var(--zl-color-error-bg);
+
+  /* ------------------------------------------------------------------------
+     2.4 DIAGRAM ENGINE TOKENS (PHASE 5)
+     ------------------------------------------------------------------------ */
+  --zl-diagram-font: var(--zl-font-sans);
+  --zl-diagram-node-bg: var(--zl-color-surface);
+  --zl-diagram-node-border: var(--zl-color-primary);
+  --zl-diagram-node-text: var(--zl-color-text-main);
+  --zl-diagram-node-radius: var(--zl-radius-md);
+  --zl-diagram-node-shadow: var(--zl-shadow-sm);
+
+  --zl-diagram-edge-color: var(--zl-color-text-muted);
+  --zl-diagram-edge-width: 2px;
+  --zl-diagram-edge-dash: 4px;
+
+  --zl-diagram-label-bg: var(--zl-color-bg);
+  --zl-diagram-label-text: var(--zl-color-text-main);
+  --zl-diagram-label-border: var(--zl-color-border);
+
+  --zl-diagram-cluster-bg: rgba(59, 130, 246, 0.03);
+  --zl-diagram-cluster-border: rgba(59, 130, 246, 0.2);
+  --zl-diagram-cluster-title: var(--zl-color-primary-dark);
+
+  /* ------------------------------------------------------------------------
+     2.5 CHART ENGINE TOKENS (PHASE 6)
+     ------------------------------------------------------------------------ */
+  --zl-chart-bg: var(--zl-color-surface);
+  --zl-chart-border: var(--zl-color-border);
+  --zl-chart-radius: var(--zl-radius-xl);
+  --zl-chart-shadow: var(--zl-shadow-md);
+  --zl-chart-text-color: var(--zl-color-text-main);
+  --zl-chart-axis-color: var(--zl-color-border-hover);
+  --zl-chart-grid-color: var(--zl-color-border-subtle);
+  --zl-chart-legend-text: var(--zl-color-text-body);
+
+  /* Palette for multi-dataset charts */
+  --zl-chart-series-1: #3b82f6; /* Blue */
+  --zl-chart-series-2: #10b981; /* Emerald */
+  --zl-chart-series-3: #8b5cf6; /* Violet */
+  --zl-chart-series-4: #f59e0b; /* Amber */
+  --zl-chart-series-5: #ef4444; /* Rose */
+  --zl-chart-series-6: #06b6d4; /* Cyan */
+  --zl-chart-series-7: #ec4899; /* Pink */
+  --zl-chart-series-8: #84cc16; /* Lime */
+
+  --zl-chart-tooltip-bg: rgba(15, 23, 42, 0.92);
+  --zl-chart-tooltip-color: #ffffff;
+  --zl-chart-tooltip-border: rgba(255, 255, 255, 0.1);
+  --zl-chart-tooltip-radius: var(--zl-radius-md);
+  --zl-chart-tooltip-shadow: var(--zl-shadow-xl);
+
+  /* ------------------------------------------------------------------------
+     2.6 VECTOR GRAPHICS TOKENS (PHASE 7)
+     ------------------------------------------------------------------------ */
+  --zl-vector-artboard-bg: var(--zl-color-bg);
+  --zl-vector-artboard-border: var(--zl-color-border);
+  --zl-vector-stroke-default: var(--zl-color-text-main);
+  --zl-vector-fill-default: var(--zl-color-primary);
+  --zl-vector-grid-line: rgba(0, 0, 0, 0.05);
+
+  /* ------------------------------------------------------------------------
+     2.7 SPATIAL LAYOUT, CANVAS & PRESENTATION TOKENS (PHASE 8)
+     ------------------------------------------------------------------------ */
+  --zl-layout-gap-sm: var(--zl-spacing-2);
+  --zl-layout-gap-md: var(--zl-spacing-4);
+  --zl-layout-gap-lg: var(--zl-spacing-8);
+
+  --zl-canvas-bg: #f8fafc;
+  --zl-canvas-grid-color: #cbd5e1;
+  --zl-canvas-grid-size: 20px;
+  --zl-canvas-selection-color: var(--zl-color-primary);
+
+  --zl-slide-width: 100%;
+  --zl-slide-aspect-ratio: 16 / 9;
+  --zl-slide-bg: #ffffff;
+  --zl-slide-color: var(--zl-color-text-main);
+  --zl-slide-padding: var(--zl-spacing-10);
+  --zl-slide-shadow: var(--zl-shadow-2xl);
+
+  --zl-slide-dark-bg: #0f1117;
+  --zl-slide-dark-color: #f8fafc;
+  --zl-slide-dark-heading: #ffffff;
+}
+
+/* ==========================================================================
+   SECTION 3: BASE DOCUMENT RESET & NORMALIZATION
+   ========================================================================== */
+
+[data-theme="custom-theme-template"] {
+  box-sizing: border-box;
+  background-color: var(--zl-color-bg);
+  color: var(--zl-color-text-body);
+  font-family: var(--zl-markdown-font);
+  font-size: var(--zl-font-size-base);
+  line-height: var(--zl-markdown-line-height);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+[data-theme="custom-theme-template"] *,
+[data-theme="custom-theme-template"] *::before,
+[data-theme="custom-theme-template"] *::after {
+  box-sizing: inherit;
+}
+
+/* Base Selection Style */
+[data-theme="custom-theme-template"] ::selection {
+  background-color: rgba(var(--zl-color-primary-rgb), 0.2);
+  color: var(--zl-color-primary-dark);
+}
+
+/* Focus Ring Customization */
+[data-theme="custom-theme-template"] *:focus-visible {
+  outline: 2px solid var(--zl-color-primary);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   SECTION 4: MARKDOWN TYPOGRAPHY & ELEMENTS (PHASES 1 & 2)
+   ========================================================================== */
+
+/* Headings H1 - H6 */
+[data-theme="custom-theme-template"] h1,
+[data-theme="custom-theme-template"] h2,
+[data-theme="custom-theme-template"] h3,
+[data-theme="custom-theme-template"] h4,
+[data-theme="custom-theme-template"] h5,
+[data-theme="custom-theme-template"] h6 {
+  font-family: var(--zl-heading-font);
+  color: var(--zl-heading-color);
+  font-weight: var(--zl-heading-weight);
+  letter-spacing: var(--zl-heading-letter-spacing);
+  line-height: var(--zl-line-height-tight);
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+[data-theme="custom-theme-template"] h1 {
+  font-size: var(--zl-font-size-4xl);
+  border-bottom: 2px solid var(--zl-color-border);
+  padding-bottom: var(--zl-spacing-2);
+}
+
+[data-theme="custom-theme-template"] h2 {
+  font-size: var(--zl-font-size-3xl);
+  border-bottom: 1px solid var(--zl-color-border-subtle);
+  padding-bottom: var(--zl-spacing-1-5);
+}
+
+[data-theme="custom-theme-template"] h3 {
+  font-size: var(--zl-font-size-2xl);
+}
+
+[data-theme="custom-theme-template"] h4 {
+  font-size: var(--zl-font-size-xl);
+}
+
+[data-theme="custom-theme-template"] h5 {
+  font-size: var(--zl-font-size-lg);
+}
+
+[data-theme="custom-theme-template"] h6 {
+  font-size: var(--zl-font-size-md);
+  text-transform: uppercase;
+  letter-spacing: var(--zl-tracking-wider);
+  color: var(--zl-color-text-muted);
+}
+
+/* Paragraphs & Links */
+[data-theme="custom-theme-template"] p {
+  margin-top: 0;
+  margin-bottom: 1.25em;
+}
+
+[data-theme="custom-theme-template"] a {
+  color: var(--zl-link-color);
+  text-decoration: var(--zl-link-decoration);
+  font-weight: var(--zl-font-weight-medium);
+  transition: color var(--zl-duration-fast) var(--zl-ease-in-out);
+}
+
+[data-theme="custom-theme-template"] a:hover {
+  color: var(--zl-link-hover-color);
+  text-decoration: var(--zl-link-hover-decoration);
+}
+
+/* Lists */
+[data-theme="custom-theme-template"] ul,
+[data-theme="custom-theme-template"] ol {
+  padding-left: var(--zl-spacing-6);
+  margin-top: 0;
+  margin-bottom: 1.25em;
+}
+
+[data-theme="custom-theme-template"] li {
+  margin-bottom: 0.375em;
+}
+
+[data-theme="custom-theme-template"] li::marker {
+  color: var(--zl-color-primary);
+}
+
+/* Blockquotes */
+[data-theme="custom-theme-template"] blockquote {
+  background-color: var(--zl-blockquote-bg);
+  border-left: 4px solid var(--zl-blockquote-border);
+  color: var(--zl-blockquote-color);
+  font-family: var(--zl-blockquote-font);
+  padding: var(--zl-blockquote-padding);
+  border-radius: 0 var(--zl-radius-md) var(--zl-radius-md) 0;
+  margin: 1.5em 0;
+  font-style: italic;
+}
+
+[data-theme="custom-theme-template"] blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Code Blocks & Inline Code */
+[data-theme="custom-theme-template"] code {
+  font-family: var(--zl-code-font);
+  font-size: 0.9em;
+  background-color: var(--zl-inline-code-bg);
+  color: var(--zl-inline-code-color);
+  padding: 0.2em 0.4em;
+  border-radius: var(--zl-radius-xs);
+  border: 1px solid var(--zl-inline-code-border);
+}
+
+[data-theme="custom-theme-template"] pre {
+  background-color: var(--zl-code-block-bg);
+  color: var(--zl-code-block-color);
+  font-family: var(--zl-code-font);
+  padding: var(--zl-spacing-4);
+  border-radius: var(--zl-code-block-radius);
+  border: 1px solid var(--zl-code-block-border);
+  overflow-x: auto;
+  margin: 1.5em 0;
+  box-shadow: var(--zl-shadow-inner);
+}
+
+[data-theme="custom-theme-template"] pre code {
+  background-color: transparent;
+  color: inherit;
+  padding: 0;
+  border: none;
+  font-size: 0.925em;
+}
+
+/* Tables */
+[data-theme="custom-theme-template"] table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  font-size: var(--zl-font-size-sm);
+  border: 1px solid var(--zl-table-border-color);
+  border-radius: var(--zl-radius-md);
+  overflow: hidden;
+}
+
+[data-theme="custom-theme-template"] th {
+  background-color: var(--zl-table-header-bg);
+  color: var(--zl-table-header-color);
+  font-weight: var(--zl-font-weight-semibold);
+  text-align: left;
+  padding: var(--zl-spacing-3) var(--zl-spacing-4);
+  border-bottom: 2px solid var(--zl-table-border-color);
+}
+
+[data-theme="custom-theme-template"] td {
+  padding: var(--zl-spacing-3) var(--zl-spacing-4);
+  border-bottom: 1px solid var(--zl-table-border-color);
+}
+
+[data-theme="custom-theme-template"] tr:nth-child(even) {
+  background-color: var(--zl-table-row-stripe-bg);
+}
+
+[data-theme="custom-theme-template"] tr:hover {
+  background-color: var(--zl-table-hover-bg);
+}
+
+/* Horizontal Rule */
+[data-theme="custom-theme-template"] hr {
+  border: 0;
+  height: 1px;
+  background-color: var(--zl-color-border);
+  margin: 2.5em 0;
+}
+
+/* Images & Figures */
+[data-theme="custom-theme-template"] img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--zl-radius-md);
+  display: block;
+  margin: 1.5em auto;
+}
+
+[data-theme="custom-theme-template"] figure {
+  margin: 2em 0;
+  text-align: center;
+}
+
+[data-theme="custom-theme-template"] figcaption {
+  font-size: var(--zl-font-size-xs);
+  color: var(--zl-color-text-muted);
+  margin-top: 0.5em;
+  font-style: italic;
+}
+
+/* Badges & Pills */
+[data-theme="custom-theme-template"] .zl-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25em 0.6em;
+  font-size: var(--zl-font-size-2xs);
+  font-weight: var(--zl-font-weight-semibold);
+  border-radius: var(--zl-radius-full);
+  background-color: var(--zl-color-primary-light);
+  color: var(--zl-color-primary-dark);
+}
+
+/* ==========================================================================
+   SECTION 5: PHASE 3 DIRECTIVES & CARD CONTAINERS
+   ========================================================================== */
+
+[data-theme="custom-theme-template"] .zl-card {
+  background-color: var(--zl-card-bg);
+  border: 1px solid var(--zl-card-border);
+  border-radius: var(--zl-card-radius);
+  box-shadow: var(--zl-card-shadow);
+  padding: var(--zl-card-padding);
+  margin: 1.5em 0;
+  transition: box-shadow var(--zl-duration-normal) var(--zl-ease-in-out),
+              transform var(--zl-duration-normal) var(--zl-ease-in-out);
+}
+
+[data-theme="custom-theme-template"] .zl-card:hover {
+  box-shadow: var(--zl-shadow-lg);
+}
+
+[data-theme="custom-theme-template"] .zl-card-title {
+  font-family: var(--zl-heading-font);
+  font-size: var(--zl-font-size-lg);
+  font-weight: var(--zl-font-weight-bold);
+  color: var(--zl-heading-color);
+  margin-top: 0;
+  margin-bottom: var(--zl-spacing-3);
+}
+
+/* Callout / Admonition Directives */
+[data-theme="custom-theme-template"] .zl-callout {
+  padding: var(--zl-spacing-4) var(--zl-spacing-5);
+  border-radius: var(--zl-radius-md);
+  border-left: 4px solid;
+  margin: 1.5em 0;
+}
+
+[data-theme="custom-theme-template"] .zl-callout-info {
+  background-color: var(--zl-callout-info-bg);
+  border-color: var(--zl-color-info);
+  color: var(--zl-callout-info-text);
+}
+
+[data-theme="custom-theme-template"] .zl-callout-warning {
+  background-color: var(--zl-callout-warning-bg);
+  border-color: var(--zl-color-warning);
+  color: var(--zl-callout-warning-text);
+}
+
+[data-theme="custom-theme-template"] .zl-callout-error {
+  background-color: var(--zl-callout-error-bg);
+  border-color: var(--zl-color-error);
+  color: var(--zl-callout-error-text);
+}
+
+[data-theme="custom-theme-template"] .zl-callout-success {
+  background-color: var(--zl-callout-success-bg);
+  border-color: var(--zl-color-success);
+  color: var(--zl-callout-success-text);
+}
+
+/* ==========================================================================
+   SECTION 6: PHASE 4 MATHEMATICAL EQUATIONS (LATEX)
+   ========================================================================== */
+
+[data-theme="custom-theme-template"] .zl-math {
+  font-family: var(--zl-math-font);
+  color: var(--zl-math-color);
+  font-size: var(--zl-math-size);
+}
+
+[data-theme="custom-theme-template"] .zl-math-inline {
+  display: inline-block;
+  padding: 0 0.15em;
+  vertical-align: middle;
+}
+
+[data-theme="custom-theme-template"] .zl-math-display {
+  display: block;
+  text-align: center;
+  margin: var(--zl-math-display-margin);
+  padding: var(--zl-spacing-4);
+  background-color: var(--zl-math-display-bg);
+  border: 1px solid var(--zl-math-display-border);
+  border-radius: var(--zl-radius-md);
+  overflow-x: auto;
+}
+
+[data-theme="custom-theme-template"] .zl-math-number {
+  float: right;
+  color: var(--zl-math-number-color);
+  font-size: var(--zl-font-size-sm);
+  font-family: var(--zl-font-sans);
+}
+
+[data-theme="custom-theme-template"] .zl-math-error {
+  color: var(--zl-math-error-color);
+  background-color: var(--zl-math-error-bg);
+  padding: var(--zl-spacing-1) var(--zl-spacing-2);
+  border-radius: var(--zl-radius-xs);
+  font-family: var(--zl-font-mono);
+  font-size: var(--zl-font-size-xs);
+}
+
+/* ==========================================================================
+   SECTION 7: PHASE 5 DIAGRAM ENGINE (FLOWCHARTS, SEQUENCE, STATE, ETC.)
+   ========================================================================== */
+
+[data-theme="custom-theme-template"] .zl-diagram {
+  display: flex;
+  justify-content: center;
+  margin: 2em 0;
+  font-family: var(--zl-diagram-font);
+}
+
+[data-theme="custom-theme-template"] .zl-diagram svg {
+  max-width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+[data-theme="custom-theme-template"] .zl-diagram-node rect,
+[data-theme="custom-theme-template"] .zl-diagram-node circle,
+[data-theme="custom-theme-template"] .zl-diagram-node polygon {
+  fill: var(--zl-diagram-node-bg);
+  stroke: var(--zl-diagram-node-border);
+  stroke-width: 2px;
+  rx: var(--zl-diagram-node-radius);
+  transition: all var(--zl-duration-fast) var(--zl-ease-in-out);
+}
+
+[data-theme="custom-theme-template"] .zl-diagram-node:hover rect {
+  stroke: var(--zl-color-primary-hover);
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+}
+
+[data-theme="custom-theme-template"] .zl-diagram-node text {
+  fill: var(--zl-diagram-node-text);
+  font-size: var(--zl-font-size-sm);
+  font-weight: var(--zl-font-weight-medium);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+[data-theme="custom-theme-template"] .zl-diagram-edge path {
+  stroke: var(--zl-diagram-edge-color);
+  stroke-width: var(--zl-diagram-edge-width);
+  fill: none;
+}
+
+[data-theme="custom-theme-template"] .zl-diagram-edge-marker {
+  fill: var(--zl-diagram-edge-color);
+}
+
+[data-theme="custom-theme-template"] .zl-diagram-cluster rect {
+  fill: var(--zl-diagram-cluster-bg);
+  stroke: var(--zl-diagram-cluster-border);
+  stroke-width: 1.5px;
+  stroke-dasharray: 4px;
+}
+
+[data-theme="custom-theme-template"] .zl-diagram-cluster-title {
+  fill: var(--zl-diagram-cluster-title);
+  font-weight: var(--zl-font-weight-semibold);
+  font-size: var(--zl-font-size-xs);
+}
+
+/* Sequence Diagram Lifelines */
+[data-theme="custom-theme-template"] .zl-diagram-lifeline {
+  stroke: var(--zl-color-border-hover);
+  stroke-dasharray: 4px 4px;
+}
+
+/* ==========================================================================
+   SECTION 8: PHASE 6 CHART & DATA VISUALIZATION ENGINE
+   ========================================================================== */
+
+[data-theme="custom-theme-template"] .zl-chart {
+  background-color: var(--zl-chart-bg);
+  border: 1px solid var(--zl-chart-border);
+  border-radius: var(--zl-chart-radius);
+  box-shadow: var(--zl-chart-shadow);
+  padding: var(--zl-spacing-4);
+  margin: 2em 0;
+}
+
+[data-theme="custom-theme-template"] .zl-chart text {
+  fill: var(--zl-chart-text-color);
+  font-family: var(--zl-font-sans);
+}
+
+[data-theme="custom-theme-template"] .zl-chart-axis line,
+[data-theme="custom-theme-template"] .zl-chart-axis path {
+  stroke: var(--zl-chart-axis-color);
+}
+
+[data-theme="custom-theme-template"] .zl-chart-grid line {
+  stroke: var(--zl-chart-grid-color);
+  stroke-dasharray: 2px 2px;
+}
+
+/* Series Palette Mapping */
+[data-theme="custom-theme-template"] .zl-chart-series-0 { fill: var(--zl-chart-series-1); stroke: var(--zl-chart-series-1); }
+[data-theme="custom-theme-template"] .zl-chart-series-1 { fill: var(--zl-chart-series-2); stroke: var(--zl-chart-series-2); }
+[data-theme="custom-theme-template"] .zl-chart-series-2 { fill: var(--zl-chart-series-3); stroke: var(--zl-chart-series-3); }
+[data-theme="custom-theme-template"] .zl-chart-series-3 { fill: var(--zl-chart-series-4); stroke: var(--zl-chart-series-4); }
+[data-theme="custom-theme-template"] .zl-chart-series-4 { fill: var(--zl-chart-series-5); stroke: var(--zl-chart-series-5); }
+[data-theme="custom-theme-template"] .zl-chart-series-5 { fill: var(--zl-chart-series-6); stroke: var(--zl-chart-series-6); }
+
+/* Tooltip Popup */
+[data-theme="custom-theme-template"] .zl-chart-tooltip {
+  position: absolute;
+  background: var(--zl-chart-tooltip-bg);
+  color: var(--zl-chart-tooltip-color);
+  border: 1px solid var(--zl-chart-tooltip-border);
+  border-radius: var(--zl-chart-tooltip-radius);
+  padding: var(--zl-spacing-2) var(--zl-spacing-3);
+  font-size: var(--zl-font-size-xs);
+  box-shadow: var(--zl-chart-tooltip-shadow);
+  pointer-events: none;
+  z-index: var(--zl-z-tooltip);
+}
+
+/* ==========================================================================
+   SECTION 9: PHASE 7 VECTOR GRAPHICS ENGINE
+   ========================================================================== */
+
+[data-theme="custom-theme-template"] .zl-vector-svg {
+  display: block;
+  margin: 1.5em auto;
+  max-width: 100%;
+  height: auto;
+  background-color: var(--zl-vector-artboard-bg);
+  border-radius: var(--zl-radius-md);
+}
+
+[data-theme="custom-theme-template"] .zl-vector-shape {
+  transition: fill var(--zl-duration-fast), stroke var(--zl-duration-fast);
+}
+
+/* ==========================================================================
+   SECTION 10: PHASE 8 SPATIAL LAYOUT & CANVAS ENGINE
+   ========================================================================== */
+
+/* Layout Containers */
+[data-theme="custom-theme-template"] .zl-layout-container {
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+[data-theme="custom-theme-template"] .zl-layout-header,
+[data-theme="custom-theme-template"] .zl-layout-footer {
+  width: 100%;
+  padding: var(--zl-spacing-4) 0;
+}
+
+[data-theme="custom-theme-template"] .zl-layout-main {
+  flex: 1;
+}
+
+/* CSS Grid System */
+[data-theme="custom-theme-template"] .zl-layout-grid {
+  display: grid;
+  gap: var(--zl-layout-gap-md);
+  width: 100%;
+}
+
+[data-theme="custom-theme-template"] .zl-layout-grid-col-1  { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+[data-theme="custom-theme-template"] .zl-layout-grid-col-2  { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+[data-theme="custom-theme-template"] .zl-layout-grid-col-3  { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+[data-theme="custom-theme-template"] .zl-layout-grid-col-4  { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+[data-theme="custom-theme-template"] .zl-layout-grid-col-6  { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+[data-theme="custom-theme-template"] .zl-layout-grid-col-12 { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+
+[data-theme="custom-theme-template"] .zl-layout-cell {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+/* Flexbox System */
+[data-theme="custom-theme-template"] .zl-layout-flex {
+  display: flex;
+  gap: var(--zl-layout-gap-md);
+  flex-wrap: wrap;
+}
+
+[data-theme="custom-theme-template"] .zl-layout-flex-row    { flex-direction: row; }
+[data-theme="custom-theme-template"] .zl-layout-flex-column { flex-direction: column; }
+[data-theme="custom-theme-template"] .zl-layout-flex-center { justify-content: center; align-items: center; }
+
+/* Absolute Spatial Canvas */
+[data-theme="custom-theme-template"] .zl-layout-canvas {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--zl-canvas-bg);
+  background-image: radial-gradient(var(--zl-canvas-grid-color) 1px, transparent 1px);
+  background-size: var(--zl-canvas-grid-size) var(--zl-canvas-grid-size);
+  border: 1px solid var(--zl-color-border);
+  border-radius: var(--zl-radius-lg);
+}
+
+[data-theme="custom-theme-template"] .zl-canvas-object {
+  position: absolute;
+  box-sizing: border-box;
+}
+
+[data-theme="custom-theme-template"] .zl-canvas-object-text {
+  font-family: var(--zl-font-sans);
+  color: var(--zl-color-text-main);
+}
+
+/* ==========================================================================
+   SECTION 11: PHASE 8 PRESENTATION & SLIDE ENGINE
+   ========================================================================== */
+
+[data-theme="custom-theme-template"] .zl-layout-presentation {
+  width: 100%;
+  max-width: 1200px;
+  margin: 2em auto;
+  perspective: 1000px;
+}
+
+[data-theme="custom-theme-template"] .zl-layout-slide {
+  width: var(--zl-slide-width);
+  aspect-ratio: var(--zl-slide-aspect-ratio);
+  background-color: var(--zl-slide-bg);
+  color: var(--zl-slide-color);
+  padding: var(--zl-slide-padding);
+  border-radius: var(--zl-radius-xl);
+  box-shadow: var(--zl-slide-shadow);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+  overflow: hidden;
+  margin-bottom: 2em;
+}
+
+/* Slide Deck Dark Theme Variant */
+[data-theme="custom-theme-template"] .zl-pres-theme-dark .zl-layout-slide,
+[data-theme="custom-theme-template"].zl-theme-dark .zl-layout-slide {
+  background-color: var(--zl-slide-dark-bg);
+  color: var(--zl-slide-dark-color);
+}
+
+[data-theme="custom-theme-template"] .zl-pres-theme-dark .zl-layout-slide h1,
+[data-theme="custom-theme-template"] .zl-pres-theme-dark .zl-layout-slide h2,
+[data-theme="custom-theme-template"] .zl-pres-theme-dark .zl-layout-slide h3 {
+  color: var(--zl-slide-dark-heading) !important;
+}
+
+[data-theme="custom-theme-template"] .zl-slide-type-title {
+  text-align: center;
+  align-items: center;
+}
+
+[data-theme="custom-theme-template"] .zl-slide-notes {
+  display: none; /* Hidden during presentation */
+}
+
+/* ==========================================================================
+   SECTION 12: MULTI-PAGE & PRINT LAYOUTS
+   ========================================================================== */
+
+[data-theme="custom-theme-template"] .zl-layout-pages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--zl-spacing-8);
+}
+
+[data-theme="custom-theme-template"] .zl-layout-page {
+  background: white;
+  width: 210mm;
+  min-height: 297mm; /* A4 Standard */
+  padding: 20mm;
+  box-shadow: var(--zl-shadow-xl);
+  border-radius: var(--zl-radius-xs);
+  box-sizing: border-box;
+  position: relative;
+}
+
+@media print {
+  [data-theme="custom-theme-template"] {
+    background: white !important;
+    color: black !important;
+  }
+
+  [data-theme="custom-theme-template"] .zl-layout-page {
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    width: 100% !important;
+    page-break-after: always;
+    break-after: page;
+  }
+
+  [data-theme="custom-theme-template"] .zl-slide-notes {
+    display: block !important;
+    margin-top: 1em;
+    font-size: 0.8em;
+    border-top: 1px solid #ccc;
+  }
+}
+
+/* ==========================================================================
+   SECTION 13: PRE-PACKAGED COLOR THEME VARIANTS
+   ========================================================================== */
+
+/* Dark Mode Overrides */
+[data-theme="custom-theme-template"].zl-theme-dark,
+[data-theme="custom-theme-template"] .zl-theme-dark {
+  --zl-color-bg: #0f172a;
+  --zl-color-bg-alt: #1e293b;
+  --zl-color-bg-subtle: #334155;
+  --zl-color-surface: #1e293b;
+  --zl-color-border: #334155;
+  --zl-color-border-hover: #475569;
+  --zl-color-text-main: #f8fafc;
+  --zl-color-text-body: #cbd5e1;
+  --zl-color-text-muted: #94a3b8;
+  --zl-card-bg: #1e293b;
+  --zl-card-border: #334155;
+  --zl-heading-color: #ffffff;
+  --zl-code-block-bg: #020617;
+  --zl-diagram-node-bg: #1e293b;
+  --zl-diagram-node-text: #f8fafc;
+  --zl-chart-bg: #1e293b;
+  --zl-chart-text-color: #f8fafc;
+}
+
+/* Cyberpunk Neon Variant */
+[data-theme="custom-theme-template"].zl-theme-cyberpunk {
+  --zl-color-primary: #00ffcc;
+  --zl-color-secondary: #ff007f;
+  --zl-color-accent: #ffe600;
+  --zl-color-bg: #05050a;
+  --zl-color-surface: #0d0e1b;
+  --zl-color-text-main: #00ffcc;
+  --zl-color-text-body: #e0e5ff;
+  --zl-color-border: #ff007f;
+  --zl-card-bg: #0d0e1b;
+  --zl-card-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
+}
+
+/* Nord Theme Variant */
+[data-theme="custom-theme-template"].zl-theme-nord {
+  --zl-color-primary: #88c0d0;
+  --zl-color-secondary: #81a1c1;
+  --zl-color-accent: #bf616a;
+  --zl-color-bg: #2e3440;
+  --zl-color-surface: #3b4252;
+  --zl-color-text-main: #eceff4;
+  --zl-color-text-body: #e5e9f0;
+  --zl-color-border: #4c566a;
+}
+
+/* Solarized Light Variant */
+[data-theme="custom-theme-template"].zl-theme-solarized {
+  --zl-color-primary: #268bd2;
+  --zl-color-secondary: #6c71c4;
+  --zl-color-accent: #cb4b16;
+  --zl-color-bg: #fdf6e3;
+  --zl-color-surface: #eee8d5;
+  --zl-color-text-main: #073642;
+  --zl-color-text-body: #657b83;
+  --zl-color-border: #93a1a1;
+}
+
+/* ==========================================================================
+   SECTION 14: MICRO-ANIMATIONS & KEYFRAMES
+   ========================================================================== */
+
+@keyframes zl-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zl-slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes zl-pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(var(--zl-color-primary-rgb), 0.2); }
+  50% { box-shadow: 0 0 20px rgba(var(--zl-color-primary-rgb), 0.6); }
+}
+
+@keyframes zl-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+[data-theme="custom-theme-template"] .zl-animate-fade {
+  animation: zl-fade-in var(--zl-duration-normal) var(--zl-ease-out);
+}
+
+[data-theme="custom-theme-template"] .zl-animate-slide {
+  animation: zl-slide-up var(--zl-duration-slow) var(--zl-ease-bounce);
+}
+
+[data-theme="custom-theme-template"] .zl-animate-pulse {
+  animation: zl-pulse-glow 2s infinite;
+}
+
+/* ==========================================================================
+   SECTION 15: ACCESSIBILITY & RESPONSIVE BREAKPOINTS
+   ========================================================================== */
+
+/* Reduced Motion Preference */
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="custom-theme-template"] *,
+  [data-theme="custom-theme-template"] *::before,
+  [data-theme="custom-theme-template"] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Mobile Breakpoint (< 640px) */
+@media (max-width: 640px) {
+  [data-theme="custom-theme-template"] h1 { font-size: var(--zl-font-size-2xl); }
+  [data-theme="custom-theme-template"] h2 { font-size: var(--zl-font-size-xl); }
+  [data-theme="custom-theme-template"] h3 { font-size: var(--zl-font-size-lg); }
+
+  [data-theme="custom-theme-template"] .zl-layout-grid-col-2,
+  [data-theme="custom-theme-template"] .zl-layout-grid-col-3,
+  [data-theme="custom-theme-template"] .zl-layout-grid-col-4,
+  [data-theme="custom-theme-template"] .zl-layout-grid-col-6,
+  [data-theme="custom-theme-template"] .zl-layout-grid-col-12 {
+    grid-template-columns: 1fr;
+  }
+
+  [data-theme="custom-theme-template"] .zl-layout-slide {
+    padding: var(--zl-spacing-4);
+    aspect-ratio: auto;
+  }
+
+  [data-theme="custom-theme-template"] .zl-layout-page {
+    width: 100%;
+    padding: var(--zl-spacing-4);
+  }
+}
+
+/* Tablet Breakpoint (641px - 1024px) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  [data-theme="custom-theme-template"] .zl-layout-grid-col-4,
+  [data-theme="custom-theme-template"] .zl-layout-grid-col-6 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* High Contrast Mode Adjustments */
+@media (forced-colors: active) {
+  [data-theme="custom-theme-template"] .zl-card,
+  [data-theme="custom-theme-template"] .zl-chart,
+  [data-theme="custom-theme-template"] .zl-layout-slide {
+    border: 2px solid CanvasText;
+  }
+}
+
+/* ==========================================================================
+   END OF ZOLTO MASTER THEME TEMPLATE
+   ========================================================================== */

@@ -1,0 +1,61 @@
+---
+title: Executive Resume Template — Phase 8 & 9
+author: Zolto Design Team
+version: 10.0.0
+---
+
+@layout width=100% padding=24 gap=20 theme="light"
+
+@header
+  # Alex Mercer
+  ### Principal Software Architect & Systems Designer
+  *Email: alex.mercer@example.com · Location: San Francisco, CA · Web: alexmercer.dev*
+@/header
+
+@grid columns=12 gap=20
+
+  @cell span=8
+    ## Executive Summary
+
+    Principal Software Architect with 12+ years of experience designing high-throughput compilers, distributed engines, and zero-dependency document systems.
+
+    ## Work Experience
+
+    ### Principal Architect — Zolto Systems (2022 – Present)
+    - Designed and implemented zero-dependency document engine compiling Markdown, Math, Diagrams, Vectors, and Spatial Layouts.
+    - Led performance optimizations achieving <500ms compile times for 10,000 data nodes.
+
+    ### Senior Systems Engineer — Cloud Scale Inc (2018 – 2022)
+    - Built real-time analytics streaming pipelines processing 2M events/sec.
+    - Reduced cloud infrastructure spend by 35% through custom memory pool allocator design.
+
+    ## Education
+
+    **B.S. in Computer Science & Applied Mathematics** — MIT (2014)
+  @/cell
+
+  @cell span=4
+    ## Technical Skills
+
+    - **Languages:** Rust, C++, TypeScript, Go, Assembly
+    - **Architecture:** Compiler Design, AST Transformation, Layout Engines
+    - **Graphics:** SVG, Vector Mathematics, Bezier Curves
+
+    ## Featured Projects
+
+    @card title="Zolto Engine" variant="info"
+      Zero-dependency document language with native spatial layout and vector drawing.
+    @/card
+
+    @card title="FastVector SVG" variant="default"
+      High-performance vector rendering library.
+    @/card
+  @/cell
+
+@/grid
+
+@footer
+  *References available upon request · Compiled with Zolto v10.0.0*
+@/footer
+
+@/layout

@@ -1,0 +1,44 @@
+---
+title: "On the Design of Extended Spatial Document Engines"
+author: A. Scholar, B. Scientist
+date: 2026-07-26
+---
+
+# On the Design of Extended Spatial Document Engines
+
+@pages size="A4" margin=32
+@page number=1
+# On the Design of Extended Spatial Document Engines
+
+*Abstract* — We present Zolto Phase 8, a zero-dependency document engine that combines Markdown, Math, Diagrams, Charts, Vector Graphics, and Spatial Layouts into a declarative syntax. The system produces 642 passing tests across 8 completed phases.
+
+---
+
+## 1. Introduction
+
+Technical documents require multi-column layouts, spatial grids, mathematical equations, and embedded charts.
+
+@grid columns=2 gap=16
+@cell
+### Theoretical Model
+Inline math: $E = mc^2$ and relativistic mass:
+
+@math label="eq:rel"
+m = \frac{m_0}{\sqrt{1 - \frac{v^2}{c^2}}}
+@/math
+@/cell
+
+@cell
+### Performance Chart
+@chart bar title="Render Latency (ms)"
+labels: P1 P2 P3 P4 P5 P6 P7 P8
+data: 2 4 5 8 12 18 22 28
+@/chart
+@/cell
+@/grid
+
+## 2. Conclusion
+
+Zolto Phase 8 achieves full spatial composition with 0 external dependencies.
+@/page
+@/pages
