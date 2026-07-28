@@ -1,25 +1,14 @@
 # Security Policy
 
 ## Supported Versions
-| Version | Supported |
-|---------|-----------|
-| 2.x.x   | ✓ Active  |
-| 1.x.x   | ✓ Active  |
-| < 1.0   | ✗ No      |
+
+Zolto follows a semantic versioning strategy. We only provide security updates for the current major release branch (e.g. `v1.x.x`).
 
 ## Reporting a Vulnerability
-**Do not open a public GitHub issue for security vulnerabilities.**
 
-Email **security@zolto.dev** with:
-1. A description of the vulnerability
-2. Steps to reproduce it
-3. Potential impact
-4. Any suggested mitigation
+Please do not report security vulnerabilities through public GitHub issues.
 
-We aim to acknowledge receipt within 48 hours and provide a resolution timeline within 7 days.
+Instead, please report them by emailing `security@zolto.io`.
+You should receive a response within 48 hours.
 
-## Scope
-- XSS via unsanitised HTML output
-- Prototype pollution via document variables or metadata
-- ReDoS (regular expression denial of service) in the lexer/parser
-- Arbitrary code execution via `@import` path traversal
+If the issue is confirmed as a vulnerability, we will open a draft security advisory and provide a CVE before pushing the patch.

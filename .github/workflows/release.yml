@@ -15,13 +15,19 @@ jobs:
         with: { node-version: '20' }
       - name: Run tests
         run: node tests/run-all.js
+      - name: Install dependencies
+        run: npm install
+      - name: Build Binaries
+        run: npm run build:bin
+      - name: Create Portable Archive
+        run: zip -r zolto-portable.zip src tests bin package.json README.md CHANGELOG.md
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
           files: |
-            src/*.js
-            tests/*.js
-            index.html
-            README.md
-            CHANGELOG.md
+            zolto-linux-x64
+            zolto-macos-x64
+            zolto-win-x64.exe
+            zolto-portable.zip
+            install.sh

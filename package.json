@@ -35,7 +35,16 @@
     "lint":      "npx eslint src/ tests/ --ext .js",
     "format":    "npx prettier --write src/ tests/ *.md",
     "build":     "echo 'No build step required — ES modules run natively'",
+    "build:bin": "npx pkg .",
     "check":     "find src tests -name \"*.js\" -exec node --check {} +"
+  },
+  "pkg": {
+    "scripts": "src/**/*.js",
+    "targets": [
+      "node20-linux-x64",
+      "node20-macos-x64",
+      "node20-win-x64"
+    ]
   },
   "engines": { "node": ">=20.0.0" },
   "keywords": [
@@ -50,6 +59,7 @@
   "devDependencies": {
     "eslint": "^10.6.0",
     "prettier": "^3.0.0",
-    "serve": "^14.0.0"
+    "serve": "^14.0.0",
+    "pkg": "^5.8.1"
   }
 }
