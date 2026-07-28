@@ -14,12 +14,9 @@ import {
   createQuizNode, createMCQNode, createMCQOptionNode, createTrueFalseNode,
   createFillBlankNode, createMatchingNode, createMatchPairNode,
   createMatrixNode, createHintNode, createExplainNode, createTimerNode,
-  createFlashcardDeckNode, createFlashcardNode,
-  createPollNode, createPollOptionNode,
-  createTaskListNode, createTaskItemNode,
-  createInteractiveTabsNode, createInteractiveTabNode,
-  createAccordionNode, createAccordionSectionNode,
-  createStateBlockNode, createStateVarNode,
+  createFlashcardDeckNode, createFlashcardNode, createPollNode, createPollOptionNode,
+  createTaskListNode, createTaskItemNode, createInteractiveTabsNode, createInteractiveTabNode,
+  createAccordionNode, createAccordionSectionNode, createStateBlockNode, createStateVarNode,
 } from './ast.js';
 
 // ─── Parser state ─────────────────────────────────────────────────────────────
@@ -46,52 +43,6 @@ function createParser(tokens) {
     if (peek().type === TK.CLOSE_BRACE) { advance(); }
   }
 
-  // Read remaining tokens on current logical block until CLOSE_BRACE or EOF
-  function readUntilClose(stopTypes = [TK.CLOSE_BRACE]) {
-    const collected = [];
-    while (!done()) {
-      skipNewlines();
-      if (done() || stopTypes.includes(peek().type)) break;
-      collected.push(advance());
-    }
-    expectClose();
-    return collected;
-  }
-
-  // Collect raw text lines until a stop keyword/close-brace
-  function readTextBlock(stopTokenTypes) {
-    const stops = new Set(stopTokenTypes || [TK.CLOSE_BRACE, TK.EOF]);
-    const lines = [];
-    while (!done()) {
-      const t = peek();
-      if (stops.has(t.type)) break;
-      if (t.type === TK.NEWLINE) { advance(); continue; }
-      lines.push(t.value || '');
-      advance();
-    }
-    return lines.join('\n').trim();
-  }
-
-  // Read inline modifiers/properties after a block opener (same line context)
-  function readInlineMods() {
-    const mods = { required: false, disabled: false, loading: false, multi: false,
-                   searchable: false, anonymous: false, shuffle: false };
-    const props = {};
-    // These are tokens already on the same logical line embedded in value=
-    return { mods, props };
-  }
-
-  // Parse string token value after a prop keyword
-  function readPropValue() {
-    const t = peek();
-    if (t.type === TK.STRING || t.type === TK.TEXT || t.type === TK.NUMBER || t.type === TK.BOOL) {
-      advance();
-      return t.value;
-    }
-    return null;
-  }
-
-  // Apply modifier tokens to a mods map
   function applyMod(mods, t) {
     if (t.type === TK.MOD_REQUIRED)   mods.required = true;
     if (t.type === TK.MOD_DISABLED)   mods.disabled = true;
@@ -102,7 +53,6 @@ function createParser(tokens) {
     if (t.type === TK.MOD_SHUFFLE)    mods.shuffle = true;
   }
 
-  // Apply property tokens to a props map
   function applyProp(props, t) {
     if (t.type === TK.PROP_LABEL)       props.label = t.value;
     if (t.type === TK.PROP_PLACEHOLDER) props.placeholder = t.value;
@@ -122,7 +72,6 @@ function createParser(tokens) {
     if (t.type === TK.PROP_DESCRIPTION) props.description = t.value;
   }
 
-  // Collect mod/prop lines until a non-mod/prop token or close
   function collectModsProps() {
     const mods = { required: false, disabled: false, loading: false, multi: false,
                    searchable: false, anonymous: false, shuffle: false };
@@ -144,17 +93,11 @@ function createParser(tokens) {
     return { mods, props };
   }
 
-  return { peek, advance, done, skipNewlines, matchBrace, expectClose,
-           readUntilClose, readTextBlock, collectModsProps };
+  return { peek, advance, done, skipNewlines, matchBrace, expectClose, collectModsProps };
 }
 
 // ─── Top-level parse function ─────────────────────────────────────────────────
 
-/**
- * Parse raw interactive block content into AST nodes.
- * @param {string} src
- * @returns {Array} Array of interactive AST nodes
- */
 export function parseInteractiveSource(src) {
   const tokens = tokenizeInteractive(src);
   const p = createParser(tokens);
@@ -211,7 +154,7 @@ function parseNode(p) {
     case TK.KW_STATE:       return parseState(p, 'local');
     case TK.KW_SHARED:      return parseState(p, 'shared');
     default:
-      p.advance(); // skip unknown
+      p.advance();
       return null;
   }
 }
@@ -219,7 +162,7 @@ function parseNode(p) {
 // ─── Parsers ──────────────────────────────────────────────────────────────────
 
 function parseInteractive(p) {
-  const tok = p.advance(); // consume @interactive
+  const tok = p.advance();
   const meta = tok.value ? parseMetaStr(tok.value) : {};
   p.skipNewlines();
   p.matchBrace();
@@ -235,9 +178,8 @@ function parseInteractive(p) {
 }
 
 function parseForm(p) {
-  const tok = p.advance(); // consume @form
+  const tok = p.advance();
   const rawValue = tok.value || '';
-  // value is form name optionally followed by { or nothing
   const name = rawValue.replace(/\s*\{.*/, '').trim() || 'form';
   p.skipNewlines();
   p.matchBrace();
@@ -256,7 +198,6 @@ function parseInput(p, inputType) {
   const tok = p.advance();
   const parts = (tok.value || '').trim().split(/\s+/);
   const name = parts[0] || 'input';
-  // Inline mods from rest of parts
   const inlineMods = parseInlineParts(parts.slice(1));
   const { mods, props } = p.collectModsProps();
   mergeMods(mods, inlineMods.mods);
@@ -296,26 +237,18 @@ function parseTextarea(p) {
 
 function parseButton(p) {
   const tok = p.advance();
-  // Syntax: @button variant name "label"  OR  @button primary "Save"
   const parts = splitRespectingQuotes(tok.value || '');
   let variant = 'primary', name = '', label = '';
   const VARIANTS = new Set(['primary','secondary','ghost','danger','outline','icon']);
   if (VARIANTS.has(parts[0])) {
     variant = parts[0];
-    // rest: maybe name then "label" or just "label"
     const rest = parts.slice(1);
-    if (rest.length === 0) {
-      name = variant; label = variant;
-    } else if (rest.length === 1) {
-      label = rest[0]; name = rest[0];
-    } else {
-      name = rest[0]; label = rest.slice(1).join(' ');
-    }
+    if (rest.length === 0) { name = variant; label = variant; }
+    else if (rest.length === 1) { label = rest[0]; name = rest[0]; }
+    else { name = rest[0]; label = rest.slice(1).join(' '); }
   } else {
     name = parts[0] || 'btn'; label = parts.slice(1).join(' ') || name;
   }
-  // Inline mods
-  const isMod = (s) => ['loading','disabled'].includes(s);
   const modsFound = { loading: false, disabled: false, btnType: 'button' };
   for (const pt of parts) {
     if (pt === 'loading')  modsFound.loading = true;
@@ -324,7 +257,6 @@ function parseButton(p) {
     if (pt === 'reset')    modsFound.btnType = 'reset';
   }
   p.skipNewlines();
-  // Optionally collectModsProps for label override etc.
   const { mods, props } = p.collectModsProps();
   return createButtonNode(variant, name, props.label || label, {
     btnType:  props.btnType || modsFound.btnType,
@@ -427,7 +359,6 @@ function parseSegment(p) {
 function parseSlider(p) {
   const tok = p.advance();
   const rawVal = tok.value || '';
-  // Compact: name 0..100 step 5  OR  name only, then block
   const compactM = /^(\S+)\s+(-?\d+)\.\.(-?\d+)(?:\s+step\s+(-?\d+))?$/.exec(rawVal.trim());
   let name, min, max, step;
   if (compactM) {
@@ -438,13 +369,11 @@ function parseSlider(p) {
     return createSliderNode(name, { min, max, step, label: props.label || null });
   }
   name = rawVal.trim() || 'slider';
-  // Check for brace block
   p.skipNewlines();
   const hasBrace = p.peek().type === TK.OPEN_BRACE;
   if (hasBrace) p.advance();
   const { props } = p.collectModsProps();
   if (hasBrace) { p.skipNewlines(); p.expectClose(); }
-  // Also check for RANGE token
   return createSliderNode(name, {
     min: props.min !== undefined ? props.min : 0,
     max: props.max !== undefined ? props.max : 100,
@@ -455,11 +384,8 @@ function parseSlider(p) {
 
 function parseProgress(p) {
   const tok = p.advance();
-  // Syntax: @progress name 75%  OR  @progress name 75
   const m = /^(\S+)\s+(\d+(?:\.\d+)?)%?$/.exec((tok.value || '').trim());
-  if (m) {
-    return createProgressNode(m[1], Number(m[2]));
-  }
+  if (m) return createProgressNode(m[1], Number(m[2]));
   return createProgressNode((tok.value || '').trim() || 'progress', 0);
 }
 
@@ -495,12 +421,10 @@ function parseMCQ(p, multi) {
     if (t.type === TK.CLOSE_BRACE || t.type === TK.EOF) break;
     if (t.type === TK.KW_CORRECT) {
       const ot = p.advance();
-      const text = stripQuotes(ot.value || '');
-      options.push(createMCQOptionNode(text, true));
+      options.push(createMCQOptionNode(stripQuotes(ot.value || ''), true));
     } else if (t.type === TK.KW_CHOICE) {
       const ot = p.advance();
-      const text = stripQuotes(ot.value || '');
-      options.push(createMCQOptionNode(text, false));
+      options.push(createMCQOptionNode(stripQuotes(ot.value || ''), false));
     } else if (t.type === TK.KW_HINT) {
       hintNode = parseHintExplain(p, 'hint');
     } else if (t.type === TK.KW_EXPLAIN) {
@@ -568,9 +492,7 @@ function parseMatrix(p) {
 function parseHintExplain(p, kind) {
   const tok = p.advance();
   let text = (tok.value || '').trim();
-  // If inline value, use it directly
   if (!text) {
-    // block form: read text until close or another block keyword
     const STOPS = new Set([TK.CLOSE_BRACE, TK.KW_EXPLAIN, TK.KW_HINT, TK.EOF]);
     const lines = [];
     p.skipNewlines();
@@ -581,7 +503,6 @@ function parseHintExplain(p, kind) {
       lines.push(t.value || '');
       p.advance();
     }
-    // consume end/close if present
     if (p.peek().type === TK.CLOSE_BRACE) p.advance();
     text = lines.join(' ').trim();
   }
@@ -608,12 +529,10 @@ function parseDeck(p) {
       p.advance();
       p.skipNewlines();
       const { props } = p.collectModsProps();
-      // consume end block marker if present
       p.skipNewlines();
       if (p.peek().type === TK.CLOSE_BRACE) p.advance();
       cards.push(createFlashcardNode(
-        props.front || '',
-        props.back  || '',
+        props.front || '', props.back || '',
         { difficulty: props.difficulty || null, tags: props.tags || [] }
       ));
     } else if (t.type === TK.PROP_DIFFICULTY) {
@@ -654,8 +573,7 @@ function parsePoll(p) {
 function parseTasks(p) {
   const tok = p.advance();
   p.skipNewlines();
-  const hasBrace = p.peek().type === TK.OPEN_BRACE ||
-                   (tok.value || '').includes('{');
+  const hasBrace = p.peek().type === TK.OPEN_BRACE || (tok.value || '').includes('{');
   if (hasBrace && p.peek().type === TK.OPEN_BRACE) p.advance();
   const items = parseTaskItems(p, 0);
   if (hasBrace) { p.skipNewlines(); p.expectClose(); }
@@ -673,7 +591,6 @@ function parseTaskItems(p, baseIndent) {
     if (itemIndent < baseIndent) break;
     p.advance();
     const checked = t.type === TK.TASK_ITEM_DONE;
-    // Look ahead for nested items
     const children = parseTaskItems(p, itemIndent + 1);
     items.push(createTaskItemNode(t.value || '', checked, children));
   }
@@ -737,7 +654,7 @@ function parseAccordion(p) {
 }
 
 function parseState(p, scope) {
-  p.advance(); // consume @state / @shared
+  p.advance();
   p.skipNewlines();
   p.matchBrace();
   const vars = [];
@@ -745,7 +662,6 @@ function parseState(p, scope) {
     p.skipNewlines();
     const t = p.peek();
     if (t.type === TK.CLOSE_BRACE || t.type === TK.EOF) break;
-    // Format: varname = value
     const text = (t.value || '');
     const eqM = /^(\w+)\s*=\s*(.+)$/.exec(text);
     if (eqM) {

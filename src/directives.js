@@ -37,7 +37,12 @@ export function parseDirective(tok, ctx) {
     case 'progress':   return _progress(tok, attrs, ctx);
     case 'avatar':     return _avatar(tok, attrs, ctx);
     case 'icon':       return _icon(tok, attrs, ctx);
-    default:           return null;
+    default:
+      if (ctx && ctx.registry && ctx.registry.directives) {
+        const customNode = ctx.registry.directives.parseCustomDirective(tok, attrs, ctx);
+        if (customNode) return customNode;
+      }
+      return null;
   }
 }
 

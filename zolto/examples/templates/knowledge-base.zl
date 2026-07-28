@@ -1,0 +1,25 @@
+---
+title: Team Knowledge Base
+---
+
+# Engineering Knowledge Base
+
+Welcome to the internal engineering wiki.
+
+## Architecture
+
+@diagram flowchart
+  Client -> API_Gateway
+  API_Gateway -> Auth_Service
+  API_Gateway -> Data_Service
+  Data_Service -> Database
+@/diagram
+
+## Onboarding
+If you are new here, please review the following:
+1. Setup your local environment
+2. Read the contribution guidelines
+3. Complete the security training
+
+> [!TIP]
+> Use the search bar in the top right to find specific API documentation.

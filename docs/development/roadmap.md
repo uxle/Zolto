@@ -42,25 +42,25 @@ Reusable abstraction system (`component`, `template`, `macro`, `slot`, `fill`, `
 
 Safe declarative interactive block model (`@interactive`, `@form`, `@quiz`, `@deck`, `@poll`, `@tasks`, `@tabs`, `@accordion`, `@state`, `@shared`), forms, inputs, buttons, toggles, sliders, quizzes, flashcards, polls, pure deterministic scoring engines, state maps, and data bindings without arbitrary scripting. **732 tests total (cumulative)**.
 
-## Phase 11 — Animation & Presentation Runtime 📋
+## Phase 11 — Animation & Presentation Runtime ✅
 
-Motion and presentation subsystem (`@animate`, `@keyframes`, easing, motion tokens), presentation slide decks (`@presentation`, `@slide`), speaker notes, presenter controls, timeline reveals, and reduced-motion accessibility.
+Declarative motion design and presentation runtime system (`@animate`, `@keyframes`, `@anim-timeline`, `@slides`, `@slide`, `@note`, `@reveal`, `@target`), duration & easing controls, motion design tokens, interactive slide decks with presenter notes & outlines, reveal triggers, static diagnostics, and automatic reduced-motion accessibility. **789 tests total (cumulative)**.
 
-## Phase 12 — Plugin API & Extension System 📋
+## Phase 12 — Plugin API & Extension System ✅
 
-Safe plugin & extension architecture (`@plugin`), lifecycle management (load, register, activate, unload), extension hooks (tokenizer, parser, renderer, validator), custom directives, sandboxing, and permissions model.
+Safe plugin & extension architecture (`PluginRegistry`, `@plugin`, `PluginSandbox`), lifecycle state machine (`load`, `initialize`, `register`, `activate`, `suspend`, `unload`), priority execution hooks (15 extension points), custom directives (`registerDirective`), custom renderers (`registerRenderer`), custom themes (`registerTheme`), data providers (`registerDataProvider`), explicit opt-in permissions, and sandboxed error boundaries. **809 tests total (cumulative)**.
 
-## Phase 13 — Language Server, IDE Tooling & Compiler Optimizations 📋
+## Phase 13 — Language Server, IDE Tooling & Compiler Optimizations ✅
 
-Full Language Server Protocol (LSP) implementation, autocomplete, hover tooltips, diagnostics, linter, formatter, refactorings, incremental parsing/rendering, multi-layer caching, and file watch support.
+Complete developer toolchain (`LspServer`, `CompletionEngine`, `HoverEngine`, `DiagnosticsEngine`, `FormatterEngine`, `LinterEngine`, `RefactorEngine`, `DocumentIndexer`, `SearchEngine`, `IncrementalPipeline`, `CacheManager`, `FileWatcher`) supporting full LSP protocol commands, context-aware auto-completion, hover help, non-destructive formatting, configurable linting rules, symbol refactoring, dirty-region incremental parsing & rendering, and layered caching. **829 tests total (cumulative)**.
 
-## Phase 14 — Collaboration, Versioning & Production Ecosystem 📋
+## Phase 14 — Collaboration, Versioning & Production Ecosystem ✅
 
-Real-time multi-user collaboration, presence, version history, document branching & merging, inline review comments, workspace packaging, publishing pipeline, access control, audit trail.
+Team-grade production ecosystem (`CollaborationEngine`, `CommentEngine`, `VersionHistory`, `BranchEngine`, `WorkspaceManager`, `PackageBuilder`, `PublishingPipeline`, `ExportPipeline`, `AccessControl`, `SyncEngine`, `BackupManager`, `AuditTrail`) supporting real-time presence & live cursors, threaded review comments, version checkpoints & line diffs, branch merge requests, multi-file workspace packaging, production HTML/PDF/SVG/JSON publishing, role-based access control (RBAC), offline delta sync, snapshot recovery, and compliance audit logs. **844 tests total (cumulative)**.
 
-## Phase 15 — Universal Theme System 📋
+## Phase 15 — Universal Theme & Design System ✅
 
-Design tokens, Light, Dark, and Eye Protection themes, runtime switching, theme packages, user overrides.
+Universal design system (`ThemeEngine`, `ThemeSwitcher`, `ThemePackageBuilder`, `ThemeAccessibility`, `ThemeValidator`) with built-in **Light**, **Dark**, and **Eye Protection** modes (`#fbf7ee`, `#f3ebd8`, `#2d271e`), CSS design tokens (`--zl-*`), instant runtime theme switching without reloads, portable `.zltheme` package bundles, and WCAG AAA contrast ratio validation. **853 tests total (cumulative)**.
 
 ## Phase 16 — v1.0 Stable Release 📋
 

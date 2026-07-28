@@ -17,7 +17,13 @@ const ASSETS_TO_CACHE = [
   'src/tokenizer.js',
   'src/validator.js',
   'tests/tests.js',
-  'assets/icons/logo/zolto-icon.svg'
+  'assets/icons/logo/zolto-icon.svg',
+  'css/core/variables.css',
+  'css/core/reset.css',
+  'css/layout/app.css',
+  'css/components/buttons.css',
+  'css/components/modals.css',
+  'css/components/prose.css'
 ];
 
 // Install event - cache assets

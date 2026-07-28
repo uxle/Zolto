@@ -48,6 +48,8 @@ export const T = Object.freeze({
   LAYOUT_BLOCK:   'layout_block',    // Phase 8
   COMPONENT_BLOCK:'component_block', // Phase 9
   INTERACTIVE_BLOCK:'interactive_block', // Phase 10
+  ANIMATION_BLOCK:'animation_block',     // Phase 11
+  PLUGIN_BLOCK:   'plugin_block',        // Phase 12
   BLANK:          'blank',
   PARAGRAPH:      'paragraph',
 });
@@ -117,7 +119,7 @@ function lastRealIndex(tokens) {
  * @param {string} src
  * @returns {{ tokens: BlockToken[], errors: LexError[] }}
  */
-export function tokenize(src) {
+export function tokenize(src, options = {}) {
   const lines  = src.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
   const tokens = [];
   const errors = [];
@@ -344,9 +346,65 @@ export function tokenize(src) {
       }
     }
 
+    // · @animate / @keyframes / @slides / @anim-timeline blocks (Phase 11) ──────
+    { const dm = /^[ \t]*@(animate|keyframes|slides|anim-timeline)(?:\s+.*)?\s*$/.exec(line);
+      if (dm) {
+        const tag = dm[1].toLowerCase();
+        const startLine = i;
+        // Capture remaining header text on opening line
+        const headerLine = lines[i];
+        const bodyLines = [];
+        let closed = false;
+        let depth = 1;
+        const openTag   = `@${tag}`;
+        const closeTag  = `@/${tag}`;
+        i++;
+        while (i < lines.length) {
+          const stripped = lines[i].trimStart();
+          if (stripped === closeTag || stripped.startsWith(closeTag + ' ') || stripped.startsWith(closeTag + '\t')) {
+            depth--;
+            if (depth === 0) { closed = true; i++; break; }
+          } else if (stripped.startsWith(openTag) && (stripped[openTag.length] === undefined || /[\s/]/.test(stripped[openTag.length]))) {
+            depth++;
+          }
+          bodyLines.push(lines[i]); i++;
+        }
+        if (!closed) err(`Unclosed @${tag} block (missing @/${tag})`);
+        tokens.push({
+          type:    T.ANIMATION_BLOCK,
+          tag,
+          raw:     lines.slice(startLine, i).join('\n'),
+          header:  headerLine,
+          content: bodyLines.join('\n'),
+        });
+        continue;
+      }
+    }
+
+    // · @plugin block (Phase 12) ──────────────────────────────────────────────
+    { const dm = /^[ \t]*@plugin(?:\s+.*)?\s*$/.exec(line);
+      if (dm) {
+        const startLine = i;
+        const bodyLines = [];
+        let closed = false;
+        i++;
+        while (i < lines.length) {
+          if (/^[ \t]*@\/plugin\s*$/.test(lines[i])) { closed = true; i++; break; }
+          bodyLines.push(lines[i]); i++;
+        }
+        if (!closed) err('Unclosed @plugin block (missing @/plugin)');
+        tokens.push({
+          type:    T.PLUGIN_BLOCK,
+          raw:     lines.slice(startLine, i).join('\n'),
+          content: bodyLines.join('\n'),
+        });
+        continue;
+      }
+    }
+
 
     { const dm = /^[ \t]*@([a-z][a-z0-9-]*)(.*)$/.exec(line);
-      if (dm && KNOWN_DIRECTIVES.has(dm[1])) {
+      if (dm && (KNOWN_DIRECTIVES.has(dm[1]) || (options?.registry?.directives?.hasDirective(dm[1])))) {
         const { tok, nextI } = lexDirective(lines, i, dm[1], dm[2].trim());
         tokens.push(tok);
         i = nextI;

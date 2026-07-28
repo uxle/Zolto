@@ -36,7 +36,10 @@ import { renderLayout, isLayoutNode, LAYOUT_BASE_CSS } from './layout/index.js';
 import { renderComponent, isComponentNode } from './component/index.js';
 import { renderInteractiveNode, hasInteractiveNodes } from './interactive/index.js';
 import { INTERACTIVE_CSS } from './interactive/styles.js';
-import { PHASE10_NODE_TYPES } from './ast.js';
+import { PHASE10_NODE_TYPES, PHASE11_NODE_TYPES, PHASE12_NODE_TYPES } from './ast.js';
+import { renderAnimationNode, hasAnimationNodes } from './animation/index.js';
+import { ANIMATION_CSS } from './animation/styles.js';
+import { renderPluginNode } from './plugin/index.js';
 
 // ─── Icon / title maps ────────────────────────────────────────────────────────
 
@@ -72,6 +75,7 @@ export function render(doc, opts = {}) {
   if (hasMathNodes(doc.children))    parts.push('<style id="zl-math-styles">' + MATH_CSS + '</style>');
   if (hasLayoutNodes(doc.children))  parts.push('<style id="zl-layout-styles">' + LAYOUT_BASE_CSS + '</style>');
   if (hasInteractiveNodes(doc.children)) parts.push('<style id="zl-interactive-styles">' + INTERACTIVE_CSS + '</style>');
+  if (hasAnimationNodes(doc.children))   parts.push('<style id="zl-animation-styles">' + ANIMATION_CSS + '</style>');
   parts.push(...doc.children.map(n => renderBlock(n, ctx)).filter(Boolean));
   if (opts.footnoteSection !== false) {
     const fn = renderFootnotes(ctx);
@@ -162,6 +166,16 @@ function renderBlock(node, ctx) {
     case 'chart':           return renderChart(node, ctx.opts);   // Phase 6
     case 'vector':          return renderVector(node, ctx.opts);  // Phase 7
     default:
+      if (ctx.opts && ctx.opts.registry && ctx.opts.registry.renderers && ctx.opts.registry.renderers.hasRenderer('html', node.type)) {
+        const customHtml = ctx.opts.registry.renderers.renderNode('html', node, ctx.opts);
+        if (customHtml !== null) return customHtml;
+      }
+      if (PHASE12_NODE_TYPES.has(node.type)) {                             // Phase 12
+        return renderPluginNode(node);
+      }
+      if (PHASE11_NODE_TYPES.has(node.type)) {                             // Phase 11
+        return renderAnimationNode(node, ctx.opts);
+      }
       if (PHASE10_NODE_TYPES.has(node.type)) {                             // Phase 10
         return renderInteractiveNode(node, ctx.opts);
       }

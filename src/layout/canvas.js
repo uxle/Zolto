@@ -36,42 +36,47 @@ export function buildCanvasLayerStyles(node) {
   return styles.join(' ');
 }
 
+function cleanCssVal(val) {
+  if (val === null || val === undefined) return '';
+  return String(val).replace(/[;{}<>\\]/g, '').trim();
+}
+
 export function buildCanvasObjectStyles(node) {
   const styles = ['position: absolute;'];
 
-  const x = typeof node.x === 'number' ? `${node.x}px` : node.x;
-  const y = typeof node.y === 'number' ? `${node.y}px` : node.y;
+  const x = typeof node.x === 'number' ? `${node.x}px` : cleanCssVal(node.x);
+  const y = typeof node.y === 'number' ? `${node.y}px` : cleanCssVal(node.y);
 
-  styles.push(`left: ${x};`);
-  styles.push(`top: ${y};`);
+  if (x) styles.push(`left: ${x};`);
+  if (y) styles.push(`top: ${y};`);
 
   if (node.w !== null && node.w !== undefined) {
-    const w = typeof node.w === 'number' ? `${node.w}px` : node.w;
+    const w = typeof node.w === 'number' ? `${node.w}px` : cleanCssVal(node.w);
     styles.push(`width: ${w};`);
   }
 
   if (node.h !== null && node.h !== undefined) {
-    const h = typeof node.h === 'number' ? `${node.h}px` : node.h;
+    const h = typeof node.h === 'number' ? `${node.h}px` : cleanCssVal(node.h);
     styles.push(`height: ${h};`);
   }
 
   if (node.z !== null && node.z !== undefined) {
-    styles.push(`z-index: ${node.z};`);
+    styles.push(`z-index: ${cleanCssVal(node.z)};`);
   }
 
   if (node.objectType === 'text') {
-    if (node.fill) styles.push(`color: ${node.fill};`);
-    if (node.size) styles.push(`font-size: ${typeof node.size === 'number' ? `${node.size}px` : node.size};`);
-    if (node.weight) styles.push(`font-weight: ${node.weight};`);
+    if (node.fill) styles.push(`color: ${cleanCssVal(node.fill)};`);
+    if (node.size) styles.push(`font-size: ${typeof node.size === 'number' ? `${node.size}px` : cleanCssVal(node.size)};`);
+    if (node.weight) styles.push(`font-weight: ${cleanCssVal(node.weight)};`);
     styles.push('background: transparent;');
   } else {
     if (node.fill) {
-      styles.push(`background-color: ${node.fill};`);
+      styles.push(`background-color: ${cleanCssVal(node.fill)};`);
     }
   }
 
   if (node.radius) {
-    styles.push(`border-radius: ${typeof node.radius === 'number' ? `${node.radius}px` : node.radius};`);
+    styles.push(`border-radius: ${typeof node.radius === 'number' ? `${node.radius}px` : cleanCssVal(node.radius)};`);
   }
 
   return styles.join(' ');

@@ -1,0 +1,34 @@
+---
+title: Developer Portfolio
+author: Alex Developer
+theme: dark
+---
+
+# Alex Developer
+**Full-Stack Engineer & Open Source Contributor**
+
+[github](https://github.com) | [linkedin](https://linkedin.com)
+
+---
+
+## Projects
+
+[info title="Zolto Engine"]
+A zero-dependency Markdown engine built with native web technologies.
+- Implemented Phase 15 Universal Theme System
+- Built 800+ test suite
+[/info]
+
+## Skills
+@chart bar title="Proficiency"
+labels:
+  JavaScript
+  TypeScript
+  Rust
+  Python
+data:
+  95
+  90
+  75
+  85
+@/chart

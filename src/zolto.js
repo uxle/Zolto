@@ -36,9 +36,14 @@ import { renderLayout }          from './layout/renderer.js';
 import { validateLayout }        from './layout/validator.js';
 import { parseComponent, renderComponent, validateComponent, ComponentRegistry } from './component/index.js';
 import { parseInteractive, renderInteractive, validateInteractive } from './interactive/index.js';
+import { parseAnimation, renderAnimation, validateAnimation } from './animation/index.js';
+import { parsePlugin, renderPluginNode, validatePlugin, PluginRegistry, defaultRegistry, createPluginApi, PluginSandbox, checkVersionCompatibility, parsePluginManifestBlock, parsePluginManifestObject } from './plugin/index.js';
+import { createLanguageServer, formatDocument, lintDocument, createDocumentIndexer, searchProject, createIncrementalPipeline, CacheManager } from './tooling/index.js';
+import { createCollaborationSession, createVersionHistory, createBranchManager, createWorkspace, publishProject, exportDocument, createAccessControl, createBackupManager, createAuditTrail } from './ecosystem/index.js';
+import { createThemeEngine, getThemeTokens, applyTheme, buildThemePackage, validateThemeContrast } from './theme/index.js';
 
-export const VERSION = '10.0.0';
-export const PHASE   = 10;
+export const VERSION = '15.0.0';
+export const PHASE   = 15;
 
 // ─── parse() ──────────────────────────────────────────────────────────────────
 
@@ -53,15 +58,15 @@ export const PHASE   = 10;
  *   diagnostics: Diagnostics
  * }}
  */
-export function parse(src) {
+export function parse(src, options = {}) {
   if (typeof src !== 'string') {
     throw new TypeError(`Zolto.parse: expected string, got ${typeof src}`);
   }
 
-  const { tokens, errors: lexErrors } = tokenize(src);
-  const ast = parseTokens(tokens);
+  const { tokens, errors: lexErrors } = tokenize(src, options);
+  const ast = parseTokens(tokens, options);
 
-  const { errors: valErrors, warnings, diagnostics } = validate(ast);
+  const { errors: valErrors, warnings, diagnostics } = validate(ast, options);
 
   const d = new Diagnostics();
   for (const e of lexErrors) d.error('E001', e.message, { line: e.line });
@@ -103,7 +108,7 @@ export function render(ast, opts = {}) {
  * @returns {string} HTML
  */
 export function compile(src, opts = {}) {
-  const { ast } = parse(src);
+  const { ast } = parse(src, opts);
   return render(ast, opts);
 }
 
@@ -155,12 +160,61 @@ export {
   validateInteractive,
 };
 
+export {
+  parseAnimation,
+  renderAnimation,
+  validateAnimation,
+};
+
+export {
+  parsePlugin,
+  renderPluginNode,
+  validatePlugin,
+  PluginRegistry,
+  defaultRegistry,
+  createPluginApi,
+  PluginSandbox,
+  checkVersionCompatibility,
+  parsePluginManifestBlock,
+  parsePluginManifestObject,
+};
+
+export {
+  createLanguageServer,
+  formatDocument,
+  lintDocument,
+  createDocumentIndexer,
+  searchProject,
+  createIncrementalPipeline,
+  CacheManager,
+};
+
+export {
+  createCollaborationSession,
+  createVersionHistory,
+  createBranchManager,
+  createWorkspace,
+  publishProject,
+  exportDocument,
+  createAccessControl,
+  createBackupManager,
+  createAuditTrail,
+};
+
+export {
+  createThemeEngine,
+  getThemeTokens,
+  applyTheme,
+  buildThemePackage,
+  validateThemeContrast,
+};
+
 /**
  * Library metadata banner.
  * @returns {string}
  */
 export function about() {
-  return `Zolto v${VERSION} · Phase ${PHASE} · Interactive Documents & Educational Features\n` +
+  return `Zolto v${VERSION} · Phase ${PHASE} · Universal Theme & Design System\n` +
          `  parse(src) → { ast, errors, warnings, diagnostics }\n` +
          `  render(ast, opts?) → html\n` +
          `  compile(src, opts?) → html\n` +
@@ -175,5 +229,14 @@ export function about() {
          `  parseComponent(src) → { nodes, registry }\n` +
          `  renderComponent(node) → html\n` +
          `  parseInteractive(src) → { nodes, diagnostics }\n` +
-         `  renderInteractive(node) → html`;
+         `  renderInteractive(node) → html\n` +
+         `  parseAnimation(src, opts?) → { nodes, diagnostics }\n` +
+         `  renderAnimation(node) → html\n` +
+         `  parsePlugin(src) → { manifest, diagnostics }\n` +
+         `  renderPluginNode(node) → html\n` +
+         `  createLanguageServer(registry?) → LspServer\n` +
+         `  formatDocument(src, opts?) → string\n` +
+         `  lintDocument(src, ast?, rules?) → ToolingDiagnostics\n` +
+         `  publishProject(src, format?, opts?) → { job, artifact, content }\n` +
+         `  applyTheme('light' | 'dark' | 'eyeprotection' | 'custom') → { state, css }`;
 }

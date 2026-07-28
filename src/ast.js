@@ -29,6 +29,16 @@ export const PHASE7_NODE_TYPES = new Set(['vector', 'vector_scene', 'vector_artb
 export const PHASE8_NODE_TYPES = new Set(['layout', 'layout_header', 'layout_main', 'layout_footer', 'layout_sidebar', 'layout_navigation', 'layout_section', 'layout_container', 'layout_spacer', 'layout_box', 'layout_grid', 'layout_cell', 'layout_flex', 'layout_item', 'layout_stack', 'layout_canvas', 'canvas_layer', 'canvas_object', 'layout_pages', 'layout_page', 'layout_presentation', 'layout_slide']);
 export const PHASE9_NODE_TYPES = new Set(['component_def', 'component_use', 'template_def', 'template_use', 'slot_def', 'slot_outlet', 'macro_def', 'macro_use', 'conditional_block', 'loop_block', 'prop_list']);
 export const PHASE10_NODE_TYPES = new Set(['interactive', 'form', 'input', 'textarea', 'button', 'checkbox', 'radio_group', 'radio_option', 'select', 'select_option', 'slider', 'toggle', 'segment', 'segment_item', 'progress', 'quiz', 'mcq', 'mcq_option', 'multi_choice', 'true_false', 'fill_blank', 'matching', 'match_pair', 'matrix', 'hint', 'explain', 'timer', 'flashcard_deck', 'flashcard', 'poll', 'poll_option', 'task_list', 'task_item', 'accordion', 'accordion_section', 'tabs_interactive', 'tab_interactive', 'state_block', 'state_var', 'shared_block', 'binding']);
+export const PHASE11_NODE_TYPES = new Set(['animation_def', 'keyframes_def', 'keyframe_step', 'motion_token', 'transition_def', 'anim_timeline', 'anim_step', 'reveal_trigger', 'presentation', 'slide', 'speaker_note', 'animation_target', 'animation_group']);
+export const PHASE12_NODE_TYPES = new Set(['plugin_manifest', 'plugin_dependency', 'plugin_permission', 'extension_point', 'registered_directive', 'registered_renderer', 'registered_theme', 'registered_data_provider', 'plugin_config', 'plugin_error']);
+export const PHASE13_NODE_TYPES = new Set(['document_index', 'symbol_entry', 'diagnostic_entry', 'completion_item', 'hover_entry', 'refactor_action', 'formatter_hint', 'cache_entry', 'watch_event', 'tooling_state']);
+export const PHASE14_NODE_TYPES = new Set(['collaboration_session', 'presence', 'cursor', 'selection', 'comment_thread', 'comment_reply', 'document_version', 'version_diff', 'branch', 'merge_request', 'workspace', 'project_package', 'publish_job', 'deployment_artifact', 'access_control_entry', 'audit_entry', 'sync_state', 'backup_snapshot']);
+export const PHASE15_NODE_TYPES = new Set(['theme', 'theme_token', 'theme_palette', 'theme_variant', 'theme_override', 'theme_package', 'theme_state', 'accessibility_theme_preset']);
+
+
+
+
+
 
 // ═══ BLOCK NODES — Phase 1 ═══════════════════════════════════════════════════
 export function document(children=[],metadata={}){return{type:'document',children,metadata};}

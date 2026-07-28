@@ -327,24 +327,143 @@ function renderPolarAreaChart(dataset, theme, width, height, opts) {
   return renderPieChart(dataset, theme, width, height, opts, false);
 }
 
-// 14. Box Plot Chart
+// 14. Box Plot Chart (Whiskers & Box)
 function renderBoxPlotChart(dataset, theme, width, height, opts) {
-  return renderBarChart(dataset, theme, width, height, opts);
+  const pad = { top: 40, right: 30, bottom: 50, left: 50 };
+  const w = width - pad.left - pad.right;
+  const h = height - pad.top - pad.bottom;
+  const series = dataset.series.length ? dataset.series : [{ name: 'Data', data: [120, 180, 145, 210] }];
+  const allVals = series.flatMap(s => s.data.filter(v => typeof v === 'number' && !isNaN(v)));
+  if (!allVals.length) return '';
+  const domainMin = Math.min(0, Math.min(...allVals));
+  const domainMax = Math.max(1, Math.max(...allVals));
+  const range = domainMax - domainMin || 1;
+
+  const groupW = w / series.length;
+  const elements = [];
+
+  series.forEach((s, idx) => {
+    const nums = s.data.filter(v => typeof v === 'number' && !isNaN(v)).sort((a,b)=>a-b);
+    if (!nums.length) return;
+    const min = nums[0];
+    const max = nums[nums.length - 1];
+    const q1  = nums[Math.floor(nums.length * 0.25)];
+    const q3  = nums[Math.floor(nums.length * 0.75)];
+    const median = nums[Math.floor(nums.length * 0.5)];
+
+    const cx = pad.left + idx * groupW + groupW / 2;
+    const bw = Math.min(40, groupW * 0.5);
+
+    const yMin = pad.top + h - ((min - domainMin) / range) * h;
+    const yMax = pad.top + h - ((max - domainMin) / range) * h;
+    const yQ1  = pad.top + h - ((q1 - domainMin) / range) * h;
+    const yQ3  = pad.top + h - ((q3 - domainMin) / range) * h;
+    const yMed = pad.top + h - ((median - domainMin) / range) * h;
+
+    const color = theme.colors[idx % theme.colors.length];
+    // Whiskers
+    elements.push(`<line x1="${cx}" y1="${yMin}" x2="${cx}" y2="${yMax}" stroke="${color}" stroke-width="2" />`);
+    // Caps
+    elements.push(`<line x1="${cx - bw/2}" y1="${yMin}" x2="${cx + bw/2}" y2="${yMin}" stroke="${color}" stroke-width="2" />`);
+    elements.push(`<line x1="${cx - bw/2}" y1="${yMax}" x2="${cx + bw/2}" y2="${yMax}" stroke="${color}" stroke-width="2" />`);
+    // Box
+    elements.push(`<rect x="${cx - bw/2}" y="${yQ3}" width="${bw}" height="${Math.abs(yQ1 - yQ3) || 2}" fill="${color}" opacity="0.3" stroke="${color}" stroke-width="2" />`);
+    // Median
+    elements.push(`<line x1="${cx - bw/2}" y1="${yMed}" x2="${cx + bw/2}" y2="${yMed}" stroke="${color}" stroke-width="3" />`);
+  });
+
+  return elements.join('\n');
 }
 
 // 15. Candlestick Chart
 function renderCandlestickChart(dataset, theme, width, height, opts) {
-  return renderBarChart(dataset, theme, width, height, opts);
+  const pad = { top: 40, right: 30, bottom: 50, left: 50 };
+  const w = width - pad.left - pad.right;
+  const h = height - pad.top - pad.bottom;
+  const labels = dataset.labels.length ? dataset.labels : ['T1', 'T2', 'T3', 'T4'];
+  const series = dataset.series.length ? dataset.series : [{ name: 'Price', data: [100, 120, 110, 140] }];
+  const allVals = series.flatMap(s => s.data.filter(v => typeof v === 'number' && !isNaN(v)));
+  if (!allVals.length) return '';
+  const domainMin = Math.min(0, Math.min(...allVals) * 0.9);
+  const domainMax = Math.max(1, Math.max(...allVals) * 1.1);
+  const range = domainMax - domainMin || 1;
+
+  const barW = w / labels.length;
+  const elements = [];
+
+  for (let i = 0; i < labels.length; i++) {
+    const val = allVals[i % allVals.length] || 100;
+    const open = val * 0.95;
+    const close = val * 1.05;
+    const high = val * 1.1;
+    const low = val * 0.9;
+
+    const cx = pad.left + i * barW + barW / 2;
+    const cw = Math.min(30, barW * 0.6);
+
+    const yHigh = pad.top + h - ((high - domainMin) / range) * h;
+    const yLow  = pad.top + h - ((low - domainMin) / range) * h;
+    const yOpen = pad.top + h - ((open - domainMin) / range) * h;
+    const yClose= pad.top + h - ((close - domainMin) / range) * h;
+
+    const isBull = close >= open;
+    const color = isBull ? theme.colors[0] : '#dc2626';
+
+    // Wick
+    elements.push(`<line x1="${cx}" y1="${yHigh}" x2="${cx}" y2="${yLow}" stroke="${color}" stroke-width="2" />`);
+    // Candle body
+    const candleTop = Math.min(yOpen, yClose);
+    const candleH = Math.abs(yOpen - yClose) || 2;
+    elements.push(`<rect x="${cx - cw/2}" y="${candleTop}" width="${cw}" height="${candleH}" fill="${color}" opacity="0.8" stroke="${color}" stroke-width="1.5" />`);
+  }
+
+  return elements.join('\n');
 }
 
 // 16. Heatmap Chart
 function renderHeatmapChart(dataset, theme, width, height, opts) {
-  return renderBarChart(dataset, theme, width, height, opts);
+  const pad = { top: 40, right: 30, bottom: 50, left: 50 };
+  const w = width - pad.left - pad.right;
+  const h = height - pad.top - pad.bottom;
+  const labels = dataset.labels.length ? dataset.labels : ['X1', 'X2', 'X3', 'X4'];
+  const series = dataset.series.length ? dataset.series : [{ name: 'Y1', data: [10, 50, 90, 30] }, { name: 'Y2', data: [40, 80, 20, 60] }];
+  const cellW = w / labels.length;
+  const cellH = h / series.length;
+  const elements = [];
+
+  series.forEach((s, rowIdx) => {
+    s.data.forEach((val, colIdx) => {
+      if (colIdx >= labels.length) return;
+      const opacity = Math.min(1, Math.max(0.1, (val || 0) / 100));
+      const x = pad.left + colIdx * cellW;
+      const y = pad.top + rowIdx * cellH;
+      const color = theme.colors[0];
+      elements.push(`<rect x="${x + 2}" y="${y + 2}" width="${cellW - 4}" height="${cellH - 4}" fill="${color}" opacity="${opacity}" rx="4" />`);
+    });
+  });
+
+  return elements.join('\n');
 }
 
 // 17. Treemap Chart
 function renderTreemapChart(dataset, theme, width, height, opts) {
-  return renderBarChart(dataset, theme, width, height, opts);
+  const pad = { top: 40, right: 30, bottom: 50, left: 50 };
+  const w = width - pad.left - pad.right;
+  const h = height - pad.top - pad.bottom;
+  const series = dataset.series.length ? dataset.series : [{ name: 'Data', data: [40, 30, 20, 10] }];
+  const data = series[0].data.filter(v => typeof v === 'number' && v > 0);
+  const total = data.reduce((a, b) => a + b, 0) || 1;
+  const elements = [];
+
+  let curX = pad.left;
+  data.forEach((val, idx) => {
+    const sliceW = (val / total) * w;
+    const color = theme.colors[idx % theme.colors.length];
+    elements.push(`<rect x="${curX}" y="${pad.top}" width="${sliceW - 2}" height="${h}" fill="${color}" opacity="0.85" rx="4" />`);
+    curX += sliceW;
+  });
+
+  return elements.join('\n');
 }
 
 // 18. Sunburst Chart
@@ -354,12 +473,54 @@ function renderSunburstChart(dataset, theme, width, height, opts) {
 
 // 19. Funnel Chart
 function renderFunnelChart(dataset, theme, width, height, opts) {
-  return renderBarChart(dataset, theme, width, height, opts);
+  const pad = { top: 40, right: 30, bottom: 50, left: 50 };
+  const w = width - pad.left - pad.right;
+  const h = height - pad.top - pad.bottom;
+  const series = dataset.series.length ? dataset.series : [{ name: 'Data', data: [100, 75, 50, 25] }];
+  const data = series[0].data.filter(v => typeof v === 'number' && v > 0);
+  const stepH = h / data.length;
+  const elements = [];
+
+  data.forEach((val, idx) => {
+    const pct = val / 100;
+    const fw = w * pct;
+    const x = pad.left + (w - fw) / 2;
+    const y = pad.top + idx * stepH;
+    const color = theme.colors[idx % theme.colors.length];
+    elements.push(`<rect x="${x}" y="${y + 2}" width="${fw}" height="${stepH - 4}" fill="${color}" opacity="0.85" rx="4" />`);
+  });
+
+  return elements.join('\n');
 }
 
 // 20. Waterfall Chart
 function renderWaterfallChart(dataset, theme, width, height, opts) {
-  return renderBarChart(dataset, theme, width, height, opts);
+  const pad = { top: 40, right: 30, bottom: 50, left: 50 };
+  const w = width - pad.left - pad.right;
+  const h = height - pad.top - pad.bottom;
+  const labels = dataset.labels.length ? dataset.labels : ['Start', 'Gain', 'Loss', 'End'];
+  const series = dataset.series.length ? dataset.series : [{ name: 'Data', data: [100, 50, -30, 120] }];
+  const data = series[0].data;
+  const barW = w / labels.length;
+  const domainMax = 200;
+  const elements = [];
+
+  let running = 0;
+  data.forEach((val, idx) => {
+    const prev = running;
+    running += val;
+    const y1 = pad.top + h - (prev / domainMax) * h;
+    const y2 = pad.top + h - (running / domainMax) * h;
+    const barTop = Math.min(y1, y2);
+    const barH = Math.abs(y1 - y2) || 4;
+    const color = val >= 0 ? theme.colors[0] : '#dc2626';
+    const x = pad.left + idx * barW + barW * 0.15;
+    const bw = barW * 0.7;
+
+    elements.push(`<rect x="${x}" y="${barTop}" width="${bw}" height="${barH}" fill="${color}" opacity="0.85" rx="3" />`);
+  });
+
+  return elements.join('\n');
 }
 
 // 21. Gauge Chart

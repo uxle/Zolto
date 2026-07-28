@@ -9,9 +9,9 @@
 A strict superset of standard Markdown with native Mathematics, Diagrams, Charts, Vector Graphics, Spatial Layouts, Components, and Interactive Runtime — built with **Zero Dependencies**.
 
 [![CI](https://github.com/uxle/zolto/actions/workflows/ci.yml/badge.svg)](https://github.com/uxle/zolto/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-10.0.0-blue.svg)](package.json)
-[![Phase](https://img.shields.io/badge/phase-10_Complete-purple)](docs/development/roadmap.md)
-[![Tests](https://img.shields.io/badge/tests-732%2F732_passing-brightgreen.svg)](tests/)
+[![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](package.json)
+[![Phase](https://img.shields.io/badge/phase-16_Stable-purple)](docs/development/roadmap.md)
+[![Tests](https://img.shields.io/badge/tests-859%2F859_passing-brightgreen.svg)](tests/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 </div>
@@ -20,8 +20,13 @@ A strict superset of standard Markdown with native Mathematics, Diagrams, Charts
 
 ## ⚡ Highlights
 
-- **100% Markdown Compatible** — Every valid `.md` file is a valid `.zl` file. Zero syntax regressions across all 10 phases.
-- **Zero Dependencies** — Self-contained math engine, diagram layout engine, statistical chart renderer, vector drawing engine, spatial layout engine, component/template engine, and interactive widget engine.
+- **100% Markdown Compatible** — Every valid `.md` file is a valid `.zl` file. Zero syntax regressions across all 15 phases.
+- **Zero Dependencies** — Self-contained math engine, diagram layout engine, statistical chart renderer, vector drawing engine, spatial layout engine, component/template engine, interactive widget engine, animation/presentation runtime, plugin architecture, language server/tooling layer, collaboration/production ecosystem, and universal design system/theme engine.
+- **Phase 15 — Universal Theme & Design System** — Universal design system (`ThemeEngine`, `ThemeSwitcher`, `ThemePackageBuilder`, `ThemeAccessibility`, `ThemeValidator`) with built-in **Light**, **Dark**, and **Eye Protection** modes (`#fbf7ee`, `#f3ebd8`, `#2d271e`), CSS design tokens (`--zl-*`), instant runtime theme switching without reloads, portable `.zltheme` package bundles, and WCAG AAA contrast ratio validation.
+- **Phase 14 — Collaboration, Versioning & Production Ecosystem** — Team-grade production ecosystem (`CollaborationEngine`, `CommentEngine`, `VersionHistory`, `BranchEngine`, `WorkspaceManager`, `PackageBuilder`, `PublishingPipeline`, `ExportPipeline`, `AccessControl`, `SyncEngine`, `BackupManager`, `AuditTrail`) supporting real-time presence & live cursors, threaded review comments, version checkpoints & line diffs, branch merge requests, multi-file workspace packaging, production HTML/PDF/SVG/JSON publishing, role-based access control (RBAC), offline delta sync, snapshot recovery, and compliance audit logs.
+- **Phase 13 — Language Server, IDE Integration & Compiler Optimizations** — Complete developer toolchain (`LspServer`, `CompletionEngine`, `HoverEngine`, `DiagnosticsEngine`, `FormatterEngine`, `LinterEngine`, `RefactorEngine`, `DocumentIndexer`, `SearchEngine`, `IncrementalPipeline`, `CacheManager`, `FileWatcher`) supporting full LSP protocol commands, context-aware auto-completion, hover help, non-destructive formatting, configurable linting rules, symbol refactoring, dirty-region incremental parsing & rendering, and layered caching.
+- **Phase 12 — Plugin API & Extension System** — Controlled plugin architecture (`PluginRegistry`, `@plugin`, `PluginSandbox`, `PluginDiagnostics`) supporting declarative plugin manifests, lifecycle state machine (`load`, `initialize`, `register`, `activate`, `suspend`, `unload`), priority execution hooks (`beforeTokenize`, `afterParse`, `beforeRender`, etc.), custom directives (`registerDirective`), custom renderers (`registerRenderer`), custom themes (`registerTheme`), data providers (`registerDataProvider`), explicit opt-in permissions, and sandboxed error boundaries.
+- **Phase 11 — Animation & Presentation Runtime** — Native animation and presentation system (`@animate`, `@keyframes`, `@anim-timeline`, `@slides`, `@slide`, `@note`, `@reveal`) supporting keyframe motion design, duration & easing controls, motion design tokens, interactive slide decks with presenter notes & outlines, reveal triggers, and automatic reduced-motion accessibility.
 - **Phase 10 — Interactive Documents & Educational Features** — Declarative interaction engine (`@form`, `@quiz`, `@deck`, `@poll`, `@tasks`, `@tabs`, `@accordion`, `@state`, `@shared`) supporting dynamic forms, auto-graded quizzes, flashcard study decks, live polls, checklists, and safe data bindings without arbitrary scripting.
 - **Phase 9 — Component, Template & Macro System** — Declarative reusable content abstraction (`component`, `template`, `macro`, `slot`, `fill`, `if`, `each`) supporting typed/required props, default values, slot fallbacks/forwarding, template inheritance (`extends`), macro expansions, and component registries.
 - **Phase 8 — Spatial Layout & Canvas Engine** — Declarative layout system (`@layout`, `@grid`, `@flex`, `@stack`, `@canvas`, `@pages`, `@presentation`) supporting responsive CSS grids, flexbox flows, absolute positioning canvas layers, multi-page print publications, and 16:9 / 4:3 slide presentations.
@@ -31,24 +36,25 @@ A strict superset of standard Markdown with native Mathematics, Diagrams, Charts
 - **Phase 4 — Native Mathematics Engine** — Pandoc-style currency-safe `$expr$` inline math and `@math ... @/math` block math with auto-numbering, `@ref()` cross-references, and dual HTML + MathML accessibility.
 - **Phase 3 — Native Block Directives** — Universal `@directive` syntax supporting 14 document component types (`@card`, `@tabs`, `@alert`, `@steps`, `@columns`, `@badge`, `@timeline`, `@progress`, `@avatar`, `@icon`, etc.).
 - **Phase 2 — Extended Markdown** — Callouts (`> [!NOTE]`), admonitions (`[info]`), reference links, code headers, line numbers, and definition lists.
-- **High Performance** — Parses and renders 10,000+ chart data points, 1,000+ diagram nodes, 5,000+ vector shapes, 500+ quiz questions, or 100+ layout cells in under **500 ms**.
-- **Security-First & Accessible** — All SVG output and HTML widgets are XML/HTML-escaped to prevent injection. Full ARIA roles, labels, and focus rings built-in.
+- **High Performance** — Parses and renders 10,000+ chart data points, 1,000+ diagram nodes, 5,000+ vector shapes, 500+ quiz questions, 50-slide decks, 50 registered plugins, or 1,000-line formatted documents in under **50 ms**.
+- **Security-First & Accessible** — All SVG output, HTML widgets, and plugin extensions are XML/HTML-escaped to prevent injection. Full ARIA roles, labels, focus rings, sandboxed error boundaries, and permission controls built-in.
 
 ---
 
 ## 🚀 Quick Start
 
-### 1. Run Zolto Studio (Browser Playground)
+### 1. Run Zolto CLI
 
-No build step required — launch the interactive live editor directly in your browser:
+Install the official Zolto CLI to create and build projects:
 
 ```bash
-git clone https://github.com/uxle/zolto.git
-cd zolto
-npx serve . --port 3000
+npm install -g zolto
+zolto init my-project
+cd my-project
+zolto serve
 ```
 
-Open `http://localhost:3000` in your browser to start the live-preview editor.
+Open `http://localhost:3000` in your browser.
 
 ### 2. Use the Engine (Node.js / ES Modules)
 
@@ -263,12 +269,12 @@ See [`docs/development/roadmap.md`](docs/development/roadmap.md) and [`docs/P1 t
 | **Phase 8** | Spatial Layout & Canvas | ✅ | `@layout`, `@grid`, `@flex`, `@stack`, `@canvas`, `@pages`, `@presentation`, responsive grids, print & slides |
 | **Phase 9** | Component & Macro System | ✅ | `component`, `slot`, `fill`, `template`, `extends`, `macro`, typed props, logic (`if`, `each`) |
 | **Phase 10** | Interactive & Educational | ✅ | `@interactive`, `@form`, `@quiz`, `@deck`, `@poll`, `@tasks`, inputs, auto-grading, binding |
-| **Phase 11** | Animation & Presentation | 📋 | `@animate`, `@keyframes`, motion tokens, `@presentation`, `@slide`, speaker notes, reveals |
-| **Phase 12** | Plugin API & Extensions | 📋 | `@plugin` manifest, extension hooks, custom directives, renderers, sandboxing, permissions |
-| **Phase 13** | Language Server & Tooling | 📋 | Full LSP, autocomplete, hover, linter, formatter, refactorings, incremental parsing/rendering |
-| **Phase 14** | Collaboration & Ecosystem | 📋 | Real-time collaboration, presence, versioning, branching, merging, review comments, publishing |
-| **Phase 15** | Universal Theme System | 📋 | Design tokens, Light, Dark, and Eye Protection themes, runtime switching, theme packages |
-| **Phase 16** | v1.0 Stable Release | 📋 | Feature & API freeze, formal specification, official CLI, security audit, starter templates |
+| **Phase 11** | Animation & Presentation | ✅ | `@animate`, `@keyframes`, motion tokens, `@presentation`, `@slide`, speaker notes, reveals |
+| **Phase 12** | Plugin API & Extensions | ✅ | `@plugin` manifest, extension hooks, custom directives, renderers, sandboxing, permissions |
+| **Phase 13** | Language Server & Tooling | ✅ | Full LSP, autocomplete, hover, linter, formatter, refactorings, incremental parsing/rendering |
+| **Phase 14** | Collaboration & Ecosystem | ✅ | Real-time collaboration, presence, versioning, branching, merging, review comments, publishing |
+| **Phase 15** | Universal Theme System | ✅ | Design tokens, Light, Dark, and Eye Protection themes, runtime switching, theme packages |
+| **Phase 16** | v1.0 Stable Release | ✅ | Feature & API freeze, formal specification, official CLI, security audit, starter templates |
 
 ---
 
@@ -297,8 +303,8 @@ parseVector / renderVector / validateVector
 parseLayout / renderLayout / validateLayout
 
 // ── Constants ──────────────────────────────────────────────────────────────
-VERSION: string   // '10.0.0'
-PHASE: number     // 10
+VERSION: string   // '1.0.0'
+PHASE: number     // 16
 ```
 
 > **No-Throw Guarantee**: `parse`, `render`, `compile`, and all subsystem parse/render functions never throw. Errors and warnings are always returned through the `diagnostics` object or encoded as error nodes in the output HTML.
@@ -313,11 +319,11 @@ See [`docs/api/`](docs/api/) for detailed API documentation.
 # Syntax check — all source and test files
 npm run check
 
-# Full test suite — 732 tests across all 10 completed phases
+# Full test suite — 859 tests across all 15 completed phases
 npm run test:node
 ```
 
-**Current status: 732/732 tests passing · all green.**
+**Current status: 859/859 tests passing · all green.**
 
 ---
 

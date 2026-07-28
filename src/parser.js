@@ -34,6 +34,8 @@ import { parseChart }        from './chart/parser.js';
 import { parseVector }       from './vector/parser.js';
 import { parseLayout }       from './layout/parser.js';
 import { parseInteractiveSource } from './interactive/parser.js';
+import { parseAnimationSource }   from './animation/parser.js';
+import { parsePluginManifestBlock } from './plugin/manifest.js';
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
@@ -41,13 +43,14 @@ import { parseInteractiveSource } from './interactive/parser.js';
  * @param {BlockToken[]} tokens
  * @returns {DocumentNode}
  */
-export function parseTokens(tokens) {
+export function parseTokens(tokens, opts = {}) {
   const blocks     = [];
   const metadata   = {};
   const vars       = {};
   const references = new Map();  // Phase 2: reference link map
   const eqCounter  = { value: 0 }; // Phase 4: shared, mutated across all @math blocks
   const labels     = new Map();    // Phase 4: label -> equation number, for @ref()
+  const registry   = opts?.registry ?? null;
 
   for (const tok of tokens) {
     if (tok.type === T.BLANK) continue;
@@ -59,7 +62,7 @@ export function parseTokens(tokens) {
       continue;
     }
 
-    const node = parseBlockToken(tok, { vars, refs: references, eqCounter, labels });
+    const node = parseBlockToken(tok, { vars, refs: references, eqCounter, labels, registry });
     if (!node) continue;
 
     if (node.type === 'frontmatter') Object.assign(metadata, node.data);
@@ -101,6 +104,14 @@ function parseBlockToken(tok, ctx = {}) {
     case T.INTERACTIVE_BLOCK: {                                                  // Phase 10
       const nodes = parseInteractiveSource(tok.content);
       return nodes.length === 1 ? nodes[0] : { type: 'interactive', id: null, classes: [], children: nodes };
+    }
+    case T.ANIMATION_BLOCK: {                                                    // Phase 11
+      const animNodes = parseAnimationSource(tok.content, tok.tag, tok.header);
+      if (!animNodes || animNodes.length === 0) return null;
+      return animNodes.length === 1 ? animNodes[0] : { type: 'animation_group', children: animNodes };
+    }
+    case T.PLUGIN_BLOCK: {                                                       // Phase 12
+      return parsePluginManifestBlock(tok.content);
     }
     case T.PARAGRAPH:       return parseParagraph(tok, ctx);
     case 'directive': {

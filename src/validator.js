@@ -27,7 +27,7 @@ import { validateLayout }    from './layout/validator.js';
  * @param {DocumentNode} doc
  * @returns {{ errors: string[], warnings: string[], diagnostics: Diagnostics }}
  */
-export function validate(doc) {
+export function validate(doc, options = {}) {
   const d = new Diagnostics();
 
   // ── Collect defined elements ─────────────────────────────────────────────
