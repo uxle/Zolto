@@ -8,9 +8,15 @@
 
 A strict superset of standard Markdown with native Mathematics, Diagrams, Charts, Vector Graphics, Spatial Layouts, Components, and Interactive Runtime — built with **Zero Dependencies**.
 
-[![CI](https://github.com/uxle/zolto/actions/workflows/statc.yml/badge.svg)](https://github.com/uxle/zolto/actions/workflows/static.yml)
+[![CD — Continuous Deployment](https://github.com/uxle/Zolto/actions/workflows/cd.yml/badge.svg?branch=main)](https://github.com/uxle/Zolto/actions/workflows/cd.yml)
+[![CI & Deployment](https://github.com/uxle/Zolto/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/uxle/Zolto/actions/workflows/ci.yml)
+[![Dependabot Updates](https://github.com/uxle/Zolto/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/uxle/Zolto/actions/workflows/dependabot/dependabot-updates)
+[![Deploy static content to Pages](https://github.com/uxle/Zolto/actions/workflows/static.yml/badge.svg?branch=main)](https://github.com/uxle/Zolto/actions/workflows/static.yml)
+[![Deploy to GitHub Pages](https://github.com/uxle/Zolto/actions/workflows/pages.yml/badge.svg)](https://github.com/uxle/Zolto/actions/workflows/pages.yml)
+[![Lint](https://github.com/uxle/Zolto/actions/workflows/lint.yml/badge.svg)](https://github.com/uxle/Zolto/actions/workflows/lint.yml)
+[![Test Suite](https://github.com/uxle/Zolto/actions/workflows/test.yml/badge.svg)](https://github.com/uxle/Zolto/actions/workflows/test.yml)
 [![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](package.json)
-[![Phase](https://img.shields.io/badge/phase-16_Stable-purple)](docs/development/roadmap.md)
+[![Release](https://github.com/uxle/Zolto/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/uxle/Zolto/actions/workflows/release.yml)
 [![Tests](https://img.shields.io/badge/tests-859%2F859_passing-brightgreen.svg)](tests/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
