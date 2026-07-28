@@ -14,7 +14,6 @@ A strict superset of standard Markdown with native Mathematics, Diagrams, Charts
 [![Deploy static content to Pages](https://github.com/uxle/Zolto/actions/workflows/static.yml/badge.svg?branch=main)](https://github.com/uxle/Zolto/actions/workflows/static.yml)
 [![Deploy to GitHub Pages](https://github.com/uxle/Zolto/actions/workflows/pages.yml/badge.svg)](https://github.com/uxle/Zolto/actions/workflows/pages.yml)
 [![Lint](https://github.com/uxle/Zolto/actions/workflows/lint.yml/badge.svg)](https://github.com/uxle/Zolto/actions/workflows/lint.yml)
-[![Test Suite](https://github.com/uxle/Zolto/actions/workflows/test.yml/badge.svg)](https://github.com/uxle/Zolto/actions/workflows/test.yml)
 [![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](package.json)
 [![Release](https://github.com/uxle/Zolto/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/uxle/Zolto/actions/workflows/release.yml)
 [![Tests](https://img.shields.io/badge/tests-859%2F859_passing-brightgreen.svg)](tests/)
