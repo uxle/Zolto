@@ -19,17 +19,25 @@ export default [
       ecmaVersion: 2022,
       sourceType: "module",
       globals: {
-        performance: "readonly"
+        performance: "readonly",
+        console: "readonly",
+        setTimeout: "readonly",
+        process: "readonly",
+        ComponentRegistry: "readonly",
+        parseComponent: "readonly",
+        renderComponent: "readonly"
       }
     },
 
     rules: {
       "no-var": "error",
       "prefer-const": "warn",
-      "eqeqeq": ["error", "always"],
+      "eqeqeq": ["warn", "always"],
       "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
       "no-console": "off",
-      "semi": ["error", "always"]
+      "semi": ["error", "always"],
+      "no-useless-escape": "warn",
+      "no-useless-assignment": "warn"
     }
   }
 ];

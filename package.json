@@ -8,35 +8,35 @@
   },
   "main": "src/zolto.js",
   "exports": {
-    ".":             "./src/zolto.js",
-    "./ast":         "./src/ast.js",
+    ".": "./src/zolto.js",
+    "./ast": "./src/ast.js",
     "./diagnostics": "./src/diagnostics.js",
-    "./renderer":    "./src/renderer.js",
-    "./lexer":       "./src/lexer.js",
-    "./parser":      "./src/parser.js",
-    "./inline":      "./src/inline-parser.js",
-    "./validator":   "./src/validator.js",
-    "./tokenizer":   "./src/tokenizer.js",
-    "./diagram":     "./src/diagram/index.js",
-    "./chart":       "./src/chart/index.js",
-    "./vector":      "./src/vector/index.js",
-    "./layout":      "./src/layout/index.js",
-    "./component":   "./src/component/index.js",
+    "./renderer": "./src/renderer.js",
+    "./lexer": "./src/lexer.js",
+    "./parser": "./src/parser.js",
+    "./inline": "./src/inline-parser.js",
+    "./validator": "./src/validator.js",
+    "./tokenizer": "./src/tokenizer.js",
+    "./diagram": "./src/diagram/index.js",
+    "./chart": "./src/chart/index.js",
+    "./vector": "./src/vector/index.js",
+    "./layout": "./src/layout/index.js",
+    "./component": "./src/component/index.js",
     "./interactive": "./src/interactive/index.js",
-    "./animation":   "./src/animation/index.js",
-    "./plugin":      "./src/plugin/index.js",
-    "./tooling":     "./src/tooling/index.js",
-    "./ecosystem":   "./src/ecosystem/index.js",
-    "./theme":       "./src/theme/index.js"
+    "./animation": "./src/animation/index.js",
+    "./plugin": "./src/plugin/index.js",
+    "./tooling": "./src/tooling/index.js",
+    "./ecosystem": "./src/ecosystem/index.js",
+    "./theme": "./src/theme/index.js"
   },
   "scripts": {
-    "dev":       "npx serve . --port 3000 --no-request-logging",
-    "test":      "node tests/run-all.js",
-    "lint":      "npx eslint src/ tests/ --ext .js",
-    "format":    "npx prettier --write src/ tests/ *.md",
-    "build":     "echo 'No build step required — ES modules run natively'",
+    "dev": "npx serve . --port 3000 --no-request-logging",
+    "test": "node tests/run-all.js",
+    "lint": "npx eslint src/ tests/ --ext .js",
+    "format": "npx prettier --write src/ tests/ *.md",
+    "build": "echo 'No build step required — ES modules run natively'",
     "build:bin": "npx pkg .",
-    "check":     "find src tests -name \"*.js\" -exec node --check {} +"
+    "check": "find src tests -name \"*.js\" -exec node --check {} +"
   },
   "pkg": {
     "scripts": "src/**/*.js",
@@ -46,20 +46,39 @@
       "node20-win-x64"
     ]
   },
-  "engines": { "node": ">=20.0.0" },
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "keywords": [
-    "markdown", "extended-markdown", "document-engine",
-    "parser", "renderer", "callouts", "admonitions",
-    "reference-links", "definition-lists", "zolto",
-    "diagrams", "charts", "vector", "layout", "components",
-    "interactive", "animation", "plugins", "tooling", "ecosystem", "theme"
+    "markdown",
+    "extended-markdown",
+    "document-engine",
+    "parser",
+    "renderer",
+    "callouts",
+    "admonitions",
+    "reference-links",
+    "definition-lists",
+    "zolto",
+    "diagrams",
+    "charts",
+    "vector",
+    "layout",
+    "components",
+    "interactive",
+    "animation",
+    "plugins",
+    "tooling",
+    "ecosystem",
+    "theme"
   ],
   "author": "Zolto Team",
   "license": "MIT",
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "eslint": "^10.8.0",
+    "pkg": "^5.8.1",
     "prettier": "^3.0.0",
-    "serve": "^14.0.0",
-    "pkg": "^5.8.1"
+    "serve": "^14.0.0"
   }
 }

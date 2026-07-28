@@ -22,7 +22,7 @@ export function setLocale(locale) {
 export function t(key, args = {}) {
   let str = locales[currentLocale]?.[key] || locales['en']?.[key] || key;
   for (const [k, v] of Object.entries(args)) {
-    str = str.replace(new RegExp(\`\\\\{\\${k}\\\\}\`, 'g'), v);
+    str = str.replace(new RegExp("\\\\{" + k + "\\\\}", 'g'), v);
   }
   return str;
 }
