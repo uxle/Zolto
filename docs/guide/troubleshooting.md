@@ -173,7 +173,7 @@ Server -> Server: process internally
 
 ## General Issues
 
-### `npm run test:node` says tests fail
+### `npm run test` says tests fail
 
 1. Run `npm run check` first — a syntax error in any source file can cascade
 2. Check Node.js version: `node --version` must be ≥ 20

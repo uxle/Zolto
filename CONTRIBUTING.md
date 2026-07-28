@@ -11,7 +11,7 @@ First off, thank you for considering contributing to Zolto! It's people like you
 ## 2. Development Workflow
 
 - Zolto has **Zero Dependencies** at runtime. Ensure you do not add dependencies to `dependencies` in `package.json`. You may add tooling to `devDependencies`.
-- Test your changes locally: `npm run test:node`
+- Test your changes locally: `npm run test`
 - Run the syntax checker: `npm run check`
 
 ## 3. Pull Request Process

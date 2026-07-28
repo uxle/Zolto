@@ -326,7 +326,7 @@ See [`docs/api/`](docs/api/) for detailed API documentation.
 npm run check
 
 # Full test suite — 859 tests across all 15 completed phases
-npm run test:node
+npm run test
 ```
 
 **Current status: 859/859 tests passing · all green.**
