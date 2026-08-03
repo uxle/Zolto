@@ -5,6 +5,8 @@
  * and context interpolation ({name}, {item.title}) for components and templates.
  */
 
+import { escapeHtml } from '../tokenizer.js';
+
 export function parsePropDeclaration(declStr) {
   if (!declStr || typeof declStr !== 'string') return null;
   const str = declStr.trim();
@@ -183,13 +185,13 @@ export function evaluateContextPath(path, context = {}) {
   return curr ?? '';
 }
 
-export function interpolateText(text, context = {}) {
+export function interpolateText(text, context = {}, escapeValues = true) {
   if (!text || typeof text !== 'string') return text;
 
   return text.replace(/\{\s*([a-zA-Z_$][a-zA-Z0-9_$.]*)\s*\}/g, (match, expr) => {
     const val = evaluateContextPath(expr, context);
     if (val === null || val === undefined || val === '') return match;
-    if (typeof val === 'object') return JSON.stringify(val);
-    return String(val);
+    const str = typeof val === 'object' ? JSON.stringify(val) : String(val);
+    return escapeValues ? escapeHtml(str) : str;
   });
 }

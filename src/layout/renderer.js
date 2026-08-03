@@ -108,22 +108,40 @@ export function renderLayout(node, renderBlockFn = null) {
 
     case LAYOUT_NODE_TYPES.PAGES: {
       const styleStr = buildPagesContainerStyles(node);
-      return `<div class="zl-layout-pages zl-pages-size-${escapeHtml(node.size?.toLowerCase())}" style="${escapeHtml(styleStr)}">\n${renderChildren(node.children)}\n</div>`;
+      const pagesHtml = (node.children ?? []).map(child => {
+        if (child?.type === LAYOUT_NODE_TYPES.PAGE) {
+          const pageStyleStr = buildPageStyles(child, node);
+          const pageNumAttr = child.number ? ` data-page-number="${escapeHtml(child.number)}"` : '';
+          return `<div class="zl-layout-page" style="${escapeHtml(pageStyleStr)}"${pageNumAttr}>\n${renderChildren(child.children)}\n</div>`;
+        }
+        return renderChild(child);
+      }).filter(Boolean).join('\n');
+      return `<div class="zl-layout-pages zl-pages-size-${escapeHtml(node.size?.toLowerCase())}" style="${escapeHtml(styleStr)}">\n${pagesHtml}\n</div>`;
     }
 
     case LAYOUT_NODE_TYPES.PAGE: {
-      const styleStr = buildPageStyles(node);
+      // Reached when a lone @page appears without a @pages wrapper — no
+      // parent size/margin to inherit, so fall back to defaults.
+      const styleStr = buildPageStyles(node, null);
       const pageNumAttr = node.number ? ` data-page-number="${escapeHtml(node.number)}"` : '';
       return `<div class="zl-layout-page" style="${escapeHtml(styleStr)}"${pageNumAttr}>\n${renderChildren(node.children)}\n</div>`;
     }
 
     case LAYOUT_NODE_TYPES.PRESENTATION: {
       const styleStr = buildPresentationContainerStyles(node);
-      return `<div class="zl-layout-presentation zl-pres-theme-${escapeHtml(node.theme)}" style="${escapeHtml(styleStr)}">\n${renderChildren(node.children)}\n</div>`;
+      const slidesHtml = (node.children ?? []).map(child => {
+        if (child?.type === LAYOUT_NODE_TYPES.SLIDE) {
+          const slideStyleStr = buildSlideStyles(child, node);
+          return `<div class="zl-layout-slide zl-slide-${escapeHtml(child.slideType)}" style="${escapeHtml(slideStyleStr)}">\n${renderChildren(child.children)}\n</div>`;
+        }
+        return renderChild(child);
+      }).filter(Boolean).join('\n');
+      return `<div class="zl-layout-presentation zl-pres-theme-${escapeHtml(node.theme)}" style="${escapeHtml(styleStr)}">\n${slidesHtml}\n</div>`;
     }
 
     case LAYOUT_NODE_TYPES.SLIDE: {
-      const styleStr = buildSlideStyles(node);
+      // Reached when a lone @slide appears without a @presentation wrapper.
+      const styleStr = buildSlideStyles(node, null);
       return `<div class="zl-layout-slide zl-slide-${escapeHtml(node.slideType)}" style="${escapeHtml(styleStr)}">\n${renderChildren(node.children)}\n</div>`;
     }
 
@@ -175,8 +193,9 @@ export function isLayoutNode(node) {
 }
 
 function escapeHtml(str) {
-  if (typeof str !== 'string') return '';
-  return str
+  if (str === null || str === undefined) return '';
+  if (typeof str !== 'string' && typeof str !== 'number') return '';
+  return String(str)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')

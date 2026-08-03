@@ -60,8 +60,12 @@ export function parseJSONData(jsonText) {
       const data = [];
       for (const item of parsed) {
         if (typeof item === 'object' && item !== null) {
-          labels.push(item.label || item.month || item.name || item.x || String(labels.length + 1));
-          data.push(Number(item.value || item.y || item.val || 0));
+          const labelCandidate = [item.label, item.month, item.name, item.x]
+            .find(v => v !== undefined && v !== null);
+          labels.push(labelCandidate !== undefined ? labelCandidate : String(labels.length + 1));
+          const valueCandidate = [item.value, item.y, item.val]
+            .find(v => v !== undefined && v !== null);
+          data.push(Number(valueCandidate !== undefined ? valueCandidate : 0));
         } else {
           data.push(Number(item));
         }

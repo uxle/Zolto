@@ -141,7 +141,7 @@ export function createShapeNode(shapeType, attrs = {}) {
     transform: attrs.transform || null,
     translate: attrs.translate || null,
     rotate: attrs.rotate ?? null,
-    scale: attrs.scale || null,
+    scale: attrs.scale ?? null,
     skew: attrs.skew || null,
     mirror: attrs.mirror || null,
     origin: attrs.origin || null,

@@ -55,7 +55,6 @@ export function renderChart(chartAst, opts = {}) {
      class="zl-chart zl-chart-${escapeXml(chartAst.chartType)}"
      viewBox="0 0 ${width} ${height}"
      width="100%"
-     height="auto"
      role="img"
      aria-label="${ariaLabel}"
      style="width: 100% !important; max-width: 100%; height: auto; display: block; margin: 12px auto; background-color: ${theme.background}; font-family: ${theme.fontFamily}; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">

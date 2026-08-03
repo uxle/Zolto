@@ -9,13 +9,26 @@ import { buildTransformString } from './transforms.js';
 import { resolveColorToken } from './styles.js';
 
 export function escapeXml(str) {
-  if (!str) return '';
+  if (str === null || str === undefined) return '';
   return String(str)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+/**
+ * Returns the first value in `vals` that isn't null/undefined, falling
+ * through to each next candidate — unlike `a || b || c`, this correctly
+ * keeps an explicit `0` (or `false`, or `''`) instead of skipping past it
+ * as if it were absent.
+ */
+function coalesce(...vals) {
+  for (const v of vals) {
+    if (v !== null && v !== undefined) return v;
+  }
+  return undefined;
 }
 
 export function renderVectorSvgNode(node, themeName = 'dark', vectorId = 'v1') {
@@ -72,8 +85,11 @@ export function renderVectorSvgNode(node, themeName = 'dark', vectorId = 'v1') {
 
     case 'vector_icon': {
       const iconColor = fill || resolveColorToken(node.color, theme) || '#7c5cff';
-      const r = node.size / 2;
-      return `<g ${tfStr} ${opacityAttr}><circle cx="${node.x + r}" cy="${node.y + r}" r="${escapeXml(r)}" fill="${iconColor}" /><text x="${node.x + r}" y="${node.y + r + 5}" fill="#ffffff" font-size="${r * 1.2}" text-anchor="middle">★</text></g>`;
+      const size = Number(node.size) || 24;
+      const r = size / 2;
+      const cx = escapeXml((Number(node.x) || 0) + r);
+      const cy = escapeXml((Number(node.y) || 0) + r);
+      return `<g ${tfStr} ${opacityAttr}><circle cx="${cx}" cy="${cy}" r="${escapeXml(r)}" fill="${escapeXml(iconColor)}" /><text x="${cx}" y="${escapeXml((Number(node.y) || 0) + r + 5)}" fill="#ffffff" font-size="${escapeXml(r * 1.2)}" text-anchor="middle">★</text></g>`;
     }
 
     case 'vector_use': {
@@ -102,31 +118,37 @@ function renderShapePrimitive(node, fill, stroke, tfStr, opacityAttr) {
   const ariaAttr = node.ariaLabel ? `role="img" aria-label="${escapeXml(node.ariaLabel)}"` : (node.ariaHidden ? 'aria-hidden="true"' : '');
   const titleChild = node.title ? `<title>${escapeXml(node.title)}</title>` : '';
   const fillAttr = fill ? `fill="${escapeXml(fill)}"` : (node.fill === 'none' ? 'fill="none"' : 'fill="#7c5cff"');
-  const strokeAttr = stroke ? `stroke="${escapeXml(stroke)}" stroke-width="${escapeXml(node.strokeWidth || 1)}"` : '';
+  const strokeAttr = stroke ? `stroke="${escapeXml(stroke)}" stroke-width="${escapeXml(coalesce(node.strokeWidth, 1))}"` : '';
 
   if (shape === 'circle') {
-    const r = node.r || node.radius || 20;
+    const r = coalesce(node.r, node.radius, 20);
+    const cx = escapeXml(coalesce(node.cx, node.x, 0));
+    const cy = escapeXml(coalesce(node.cy, node.y, 0));
     return titleChild
-      ? `<g ${idAttr} ${tfStr}><circle cx="${node.cx || node.x}" cy="${node.cy || node.y}" r="${escapeXml(r)}" ${fillAttr} ${strokeAttr} ${ariaAttr} ${opacityAttr} />${titleChild}</g>`
-      : `<circle ${idAttr} cx="${node.cx || node.x}" cy="${node.cy || node.y}" r="${escapeXml(r)}" ${fillAttr} ${strokeAttr} ${ariaAttr} ${tfStr} ${opacityAttr} />`;
+      ? `<g ${idAttr} ${tfStr}><circle cx="${cx}" cy="${cy}" r="${escapeXml(r)}" ${fillAttr} ${strokeAttr} ${ariaAttr} ${opacityAttr} />${titleChild}</g>`
+      : `<circle ${idAttr} cx="${cx}" cy="${cy}" r="${escapeXml(r)}" ${fillAttr} ${strokeAttr} ${ariaAttr} ${tfStr} ${opacityAttr} />`;
   }
 
   if (shape === 'ellipse') {
+    const cx = escapeXml(coalesce(node.cx, node.x, 0));
+    const cy = escapeXml(coalesce(node.cy, node.y, 0));
+    const rx = escapeXml(coalesce(node.rx, 30));
+    const ry = escapeXml(coalesce(node.ry, 15));
     return titleChild
-      ? `<g ${idAttr} ${tfStr}><ellipse cx="${escapeXml(node.cx || node.x)}" cy="${escapeXml(node.cy || node.y)}" rx="${escapeXml(node.rx || 30)}" ry="${escapeXml(node.ry || 15)}" ${fillAttr} ${strokeAttr} ${ariaAttr} ${opacityAttr} />${titleChild}</g>`
-      : `<ellipse ${idAttr} cx="${escapeXml(node.cx || node.x)}" cy="${escapeXml(node.cy || node.y)}" rx="${escapeXml(node.rx || 30)}" ry="${escapeXml(node.ry || 15)}" ${fillAttr} ${strokeAttr} ${ariaAttr} ${tfStr} ${opacityAttr} />`;
+      ? `<g ${idAttr} ${tfStr}><ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" ${fillAttr} ${strokeAttr} ${ariaAttr} ${opacityAttr} />${titleChild}</g>`
+      : `<ellipse ${idAttr} cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" ${fillAttr} ${strokeAttr} ${ariaAttr} ${tfStr} ${opacityAttr} />`;
   }
 
   if (shape === 'line') {
     return titleChild
-      ? `<g ${idAttr} ${tfStr}><line x1="${escapeXml(node.x1)}" y1="${escapeXml(node.y1)}" x2="${escapeXml(node.x2)}" y2="${escapeXml(node.y2)}" stroke="${escapeXml(stroke || fill || '#7c5cff')}" stroke-width="${escapeXml(node.strokeWidth || 2)}" ${ariaAttr} ${opacityAttr} />${titleChild}</g>`
-      : `<line ${idAttr} x1="${escapeXml(node.x1)}" y1="${escapeXml(node.y1)}" x2="${escapeXml(node.x2)}" y2="${escapeXml(node.y2)}" stroke="${escapeXml(stroke || fill || '#7c5cff')}" stroke-width="${escapeXml(node.strokeWidth || 2)}" ${ariaAttr} ${tfStr} ${opacityAttr} />`;
+      ? `<g ${idAttr} ${tfStr}><line x1="${escapeXml(node.x1)}" y1="${escapeXml(node.y1)}" x2="${escapeXml(node.x2)}" y2="${escapeXml(node.y2)}" stroke="${escapeXml(stroke || fill || '#7c5cff')}" stroke-width="${escapeXml(coalesce(node.strokeWidth, 2))}" ${ariaAttr} ${opacityAttr} />${titleChild}</g>`
+      : `<line ${idAttr} x1="${escapeXml(node.x1)}" y1="${escapeXml(node.y1)}" x2="${escapeXml(node.x2)}" y2="${escapeXml(node.y2)}" stroke="${escapeXml(stroke || fill || '#7c5cff')}" stroke-width="${escapeXml(coalesce(node.strokeWidth, 2))}" ${ariaAttr} ${tfStr} ${opacityAttr} />`;
   }
 
   if (shape === 'polyline') {
     return titleChild
-      ? `<g ${idAttr} ${tfStr}><polyline points="${escapeXml(node.points || '')}" fill="none" stroke="${escapeXml(stroke || fill || '#7c5cff')}" stroke-width="${escapeXml(node.strokeWidth || 2)}" ${ariaAttr} ${opacityAttr} />${titleChild}</g>`
-      : `<polyline ${idAttr} points="${escapeXml(node.points || '')}" fill="none" stroke="${escapeXml(stroke || fill || '#7c5cff')}" stroke-width="${escapeXml(node.strokeWidth || 2)}" ${ariaAttr} ${tfStr} ${opacityAttr} />`;
+      ? `<g ${idAttr} ${tfStr}><polyline points="${escapeXml(node.points || '')}" fill="none" stroke="${escapeXml(stroke || fill || '#7c5cff')}" stroke-width="${escapeXml(coalesce(node.strokeWidth, 2))}" ${ariaAttr} ${opacityAttr} />${titleChild}</g>`
+      : `<polyline ${idAttr} points="${escapeXml(node.points || '')}" fill="none" stroke="${escapeXml(stroke || fill || '#7c5cff')}" stroke-width="${escapeXml(coalesce(node.strokeWidth, 2))}" ${ariaAttr} ${tfStr} ${opacityAttr} />`;
   }
 
   if (shape === 'polygon') {
@@ -146,12 +168,12 @@ function renderShapePrimitive(node, fill, stroke, tfStr, opacityAttr) {
       ? `M ${escapeXml(node.x1)} ${escapeXml(node.y1)} C ${escapeXml(node.c1x)} ${escapeXml(node.c1y)}, ${escapeXml(node.c2x)} ${escapeXml(node.c2y)}, ${escapeXml(node.x2)} ${escapeXml(node.y2)}`
       : `M ${escapeXml(node.x1)} ${escapeXml(node.y1)} Q ${escapeXml(node.c1x)} ${escapeXml(node.c1y)}, ${escapeXml(node.x2)} ${escapeXml(node.y2)}`;
     return titleChild
-      ? `<g ${idAttr} ${tfStr}><path d="${pathD}" fill="none" stroke="${escapeXml(stroke || fill || '#7c5cff')}" stroke-width="${escapeXml(node.strokeWidth || 2)}" ${ariaAttr} ${opacityAttr} />${titleChild}</g>`
-      : `<path ${idAttr} d="${pathD}" fill="none" stroke="${escapeXml(stroke || fill || '#7c5cff')}" stroke-width="${escapeXml(node.strokeWidth || 2)}" ${ariaAttr} ${tfStr} ${opacityAttr} />`;
+      ? `<g ${idAttr} ${tfStr}><path d="${pathD}" fill="none" stroke="${escapeXml(stroke || fill || '#7c5cff')}" stroke-width="${escapeXml(coalesce(node.strokeWidth, 2))}" ${ariaAttr} ${opacityAttr} />${titleChild}</g>`
+      : `<path ${idAttr} d="${pathD}" fill="none" stroke="${escapeXml(stroke || fill || '#7c5cff')}" stroke-width="${escapeXml(coalesce(node.strokeWidth, 2))}" ${ariaAttr} ${tfStr} ${opacityAttr} />`;
   }
 
   // Default: rect
-  const rVal = node.radius || node.r || 0;
+  const rVal = escapeXml(coalesce(node.radius, node.r, 0));
   return titleChild
     ? `<g ${idAttr} ${tfStr}><rect x="${escapeXml(node.x)}" y="${escapeXml(node.y)}" width="${escapeXml(node.w)}" height="${escapeXml(node.h)}" rx="${rVal}" ry="${rVal}" ${fillAttr} ${strokeAttr} ${ariaAttr} ${opacityAttr} />${titleChild}</g>`
     : `<rect ${idAttr} x="${escapeXml(node.x)}" y="${escapeXml(node.y)}" width="${escapeXml(node.w)}" height="${escapeXml(node.h)}" rx="${rVal}" ry="${rVal}" ${fillAttr} ${strokeAttr} ${ariaAttr} ${tfStr} ${opacityAttr} />`;

@@ -4,7 +4,7 @@
  */
 import { runAllTests } from './tests.js';
 
-const { results, passed, failed, total } = runAllTests();
+const { results, passed, failed, total } = await runAllTests();
 
 let suite = '';
 for (const r of results) {

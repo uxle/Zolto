@@ -59,7 +59,14 @@ export function escapeHtml(str) {
 
 export function escapeAttr(str) {
   const s = String(str).trim();
-  if (/^(?:javascript|vbscript|data):/i.test(s)) return '#';
+  // Browsers strip ASCII tab/newline/carriage-return from a URL before
+  // parsing its scheme (WHATWG URL Standard, "remove all ASCII tab or
+  // newline" preprocessing step) — so "java\tscript:" is parsed by the
+  // browser as "javascript:" even though it doesn't match a naive regex
+  // against the raw string. Strip the same characters before testing, or
+  // this filter can be bypassed entirely.
+  const schemeCheck = s.replace(/[\t\n\r]+/g, '');
+  if (/^(?:javascript|vbscript|data):/i.test(schemeCheck)) return '#';
   return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 

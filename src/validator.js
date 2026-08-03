@@ -121,8 +121,10 @@ function collectDefs(node, fns, refs, hIds, d) {
   for (const child of node.children ?? []) collectDefs(child, fns, refs, hIds, d);
   for (const child of node.items    ?? []) collectDefs(child, fns, refs, hIds, d);
   // Table rows
-  for (const row of [...(node.head ?? []), ...(node.rows ?? [])]) {
-    if (row?.cells) for (const c of row.cells) collectDefs(c, fns, refs, hIds, d);
+  if (node.type === 'table') {
+    for (const row of [...(node.head ?? []), ...(node.rows ?? [])]) {
+      if (row?.cells) for (const c of row.cells) collectDefs(c, fns, refs, hIds, d);
+    }
   }
 }
 
@@ -163,8 +165,10 @@ function validateNode(node, ctx, d) {
   // Recurse blocks
   for (const child of node.children ?? []) validateNode(child, ctx, d);
   for (const item  of node.items    ?? []) validateNode(item,  ctx, d);
-  for (const row   of [...(node.head ?? []), ...(node.rows ?? [])]) {
-    if (row?.cells) for (const c of row.cells) validateNode(c, ctx, d);
+  if (node.type === 'table') {
+    for (const row of [...(node.head ?? []), ...(node.rows ?? [])]) {
+      if (row?.cells) for (const c of row.cells) validateNode(c, ctx, d);
+    }
   }
 
   // Validate inline content

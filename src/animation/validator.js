@@ -8,6 +8,7 @@
 import { ANIMATION_NODE_TYPES, ANIMATION_TYPES, SLIDE_TYPES } from './ast.js';
 import { isValidEasing, isValidDuration } from './easing.js';
 import { AnimationDiagnostics } from './diagnostics.js';
+import { BUILTIN_KEYFRAMES } from './keyframes.js';
 
 // ─── Main validator ───────────────────────────────────────────────────────────
 
@@ -80,9 +81,13 @@ function validateKeyframesDef(node, diag, seenNames) {
   }
 
   if (!node.steps || node.steps.length === 0) {
-    // Only warn if not a known built-in
-    const { BUILTIN_KEYFRAMES } = /** @type {any} */({});
-    diag.info('E1112', `Keyframes "${node.name}" has no steps — will use built-in if name matches`, { name: node.name });
+    // Only treat as informational if it matches a known built-in; otherwise
+    // this is a real authoring mistake (an empty, unrecognized keyframes def).
+    if (node.name && BUILTIN_KEYFRAMES[node.name]) {
+      diag.info('E1112', `Keyframes "${node.name}" has no steps — will use built-in`, { name: node.name });
+    } else {
+      diag.warn('E1112', `Keyframes "${node.name}" has no steps and does not match a built-in`, { name: node.name });
+    }
   } else {
     const percents = node.steps.map(s => s.percent);
     const hasZero  = percents.some(p => p === 0);

@@ -40,7 +40,6 @@ export function renderVector(vectorAst, opts = {}) {
      class="zl-vector zl-vector-scene"
      viewBox="${viewBox}"
      width="100%"
-     height="auto"
      role="img"
      aria-label="${ariaLabel}"
      style="max-width: 100%; max-height: 480px; width: auto; height: auto; display: block; margin: 12px auto; background-color: ${background}; font-family: Inter, sans-serif; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">

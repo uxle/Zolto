@@ -22,11 +22,13 @@ import { runPhase12Tests } from './tests-p12.js';
 import { runPhase13Tests } from './tests-p13.js';
 import { runPhase14Tests } from './tests-p14.js';
 import { runPhase15Tests } from './tests-p15.js';
+import integrationSuite from './integration/interpolation-and-slots.test.js';
+import deepAuditSuite from './integration/deep-audit-regressions.test.js';
 
-export function runAllTests() {
-  const p2 = runP2Tests();
-  const p3 = runP3Tests();
-  const p4 = runP4Tests();
+export async function runAllTests() {
+  const p2 = await runP2Tests();
+  const p3 = await runP3Tests();
+  const p4 = await runP4Tests();
   const p5 = runP5Tests();
   const p6 = runP6Tests();
   const p7 = runPhase7Tests();
@@ -37,7 +39,7 @@ export function runAllTests() {
   const p12 = runPhase12Tests();
   const p13 = runPhase13Tests();
   const p14 = runPhase14Tests();
-  const p15 = runPhase15Tests();
+  const p15 = await runPhase15Tests();
 
   const p7Results = [
     { suite: 'Phase 7 · Vector Graphics Engine', desc: 'Vector Parser & Renderer Fixtures', pass: p7.failed === 0 }
@@ -66,11 +68,18 @@ export function runAllTests() {
   const p15Results = [
     { suite: 'Phase 15 · Universal Theme & Design System', desc: 'Light, Dark, Eye Protection Palettes, Design Tokens, Theme Engine, Runtime Theme Switching, Theme Packages, WCAG AAA Contrast Validation', pass: p15.failed === 0 }
   ];
+  const integrationResults = await integrationSuite.run();
+  const integrationPassed = integrationResults.filter(r => r.pass).length;
+  const integrationFailed = integrationResults.length - integrationPassed;
+
+  const deepAuditResults = await deepAuditSuite.run();
+  const deepAuditPassed = deepAuditResults.filter(r => r.pass).length;
+  const deepAuditFailed = deepAuditResults.length - deepAuditPassed;
 
   return {
-    results: [...p2.results, ...p3.results, ...p4.results, ...p5.results, ...p6.results, ...p7Results, ...p8Results, ...p9Results, ...p10Results, ...p11Results, ...p12Results, ...p13Results, ...p14Results, ...p15Results],
-    passed:  p2.passed + p3.passed + p4.passed + p5.passed + p6.passed + p7.passed + p8.passed + p9.passed + p10.passed + p11.passed + p12.passed + p13.passed + p14.passed + p15.passed,
-    failed:  p2.failed + p3.failed + p4.failed + p5.failed + p6.failed + p7.failed + p8.failed + p9.failed + p10.failed + p11.failed + p12.failed + p13.failed + p14.failed + p15.failed,
-    total:   p2.total  + p3.total  + p4.total  + p5.total  + p6.total  + (p7.passed + p7.failed) + p8.total + p9.total + p10.total + p11.total + p12.total + p13.total + p14.total + p15.total,
+    results: [...p2.results, ...p3.results, ...p4.results, ...p5.results, ...p6.results, ...p7Results, ...p8Results, ...p9Results, ...p10Results, ...p11Results, ...p12Results, ...p13Results, ...p14Results, ...p15Results, ...integrationResults, ...deepAuditResults],
+    passed:  p2.passed + p3.passed + p4.passed + p5.passed + p6.passed + p7.passed + p8.passed + p9.passed + p10.passed + p11.passed + p12.passed + p13.passed + p14.passed + p15.passed + integrationPassed + deepAuditPassed,
+    failed:  p2.failed + p3.failed + p4.failed + p5.failed + p6.failed + p7.failed + p8.failed + p9.failed + p10.failed + p11.failed + p12.failed + p13.failed + p14.failed + p15.failed + integrationFailed + deepAuditFailed,
+    total:   p2.total  + p3.total  + p4.total  + p5.total  + p6.total  + (p7.passed + p7.failed) + p8.total + p9.total + p10.total + p11.total + p12.total + p13.total + p14.total + p15.total + integrationResults.length + deepAuditResults.length,
   };
 }

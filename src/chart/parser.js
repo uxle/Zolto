@@ -126,12 +126,25 @@ export function parseChart(bodyStr, headerStr = '') {
       const headerName = tok.value.toLowerCase();
 
       if (headerName === 'labels:') {
+        let lineParts = [];
+        let prevEndCol = null;
+        const flushLine = () => {
+          if (lineParts.length > 0) currentDataset.labels.push(lineParts.join(''));
+          lineParts = [];
+          prevEndCol = null;
+        };
         while (pos < tokens.length && peek().type !== ChartTokenType.SECTION_HEADER && peek().type !== ChartTokenType.CLOSE_CHART && peek().type !== ChartTokenType.EOF) {
           const valTok = advance();
-          if (valTok && valTok.type !== ChartTokenType.NEWLINE) {
-            currentDataset.labels.push(String(valTok.value));
+          if (valTok && valTok.type === ChartTokenType.NEWLINE) {
+            flushLine();
+          } else if (valTok) {
+            const text = String(valTok.value);
+            if (prevEndCol !== null && valTok.column > prevEndCol) lineParts.push(' ');
+            lineParts.push(text);
+            prevEndCol = valTok.column + (valTok.raw ?? text).length;
           }
         }
+        flushLine();
       } else if (headerName === 'data:') {
         const dataVals = [];
         while (pos < tokens.length && peek().type !== ChartTokenType.SECTION_HEADER && peek().type !== ChartTokenType.CLOSE_CHART && peek().type !== ChartTokenType.EOF) {

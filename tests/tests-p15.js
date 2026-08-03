@@ -23,10 +23,10 @@ import { ThemeValidator } from '../src/theme/validator.js';
 
 let _pass = 0, _fail = 0;
 const results = [];
+const queue = []; // { desc, fn } — executed sequentially inside runPhase15Tests()
 
 function test(desc, fn) {
-  try { fn(); _pass++; results.push({ pass: true, desc }); }
-  catch (e) { _fail++; results.push({ pass: false, desc, err: String(e.message) }); }
+  queue.push({ desc, fn });
 }
 
 function assert(val, msg) {
@@ -166,7 +166,7 @@ test('BUG-1407: Canvas renderer sanitizes CSS property inputs', async () => {
   const { buildCanvasObjectStyles } = await import('../src/layout/canvas.js');
   const styles = buildCanvasObjectStyles({ objectType: 'text', fill: 'red; position: fixed', x: 10, y: 10 });
   assert(!styles.includes('position: fixed'), 'CSS injection payload sanitized out');
-  assert(styles.includes('color: red position: fixed'), 'clean val set');
+  assert(styles.includes('color: red;'), 'clean val set');
 });
 
 test('BUG-1411: ThemeAccessibility parses rgb color strings', () => {
@@ -197,6 +197,10 @@ permissions: ["read:data,write:data", "network:fetch"]
 
 // ─── Export ───────────────────────────────────────────────────────────────────
 
-export function runPhase15Tests() {
+export async function runPhase15Tests() {
+  for (const { desc, fn } of queue) {
+    try { await fn(); _pass++; results.push({ pass: true, desc }); }
+    catch (e) { _fail++; results.push({ pass: false, desc, err: String(e.message) }); }
+  }
   return { results, passed: _pass, failed: _fail, total: _pass + _fail };
 }

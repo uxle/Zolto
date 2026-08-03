@@ -38,7 +38,15 @@ export function buildCanvasLayerStyles(node) {
 
 function cleanCssVal(val) {
   if (val === null || val === undefined) return '';
-  return String(val).replace(/[;{}<>\\]/g, '').trim();
+  const str = String(val);
+  // Truncate at the first character that could break out of this CSS
+  // declaration or the surrounding HTML attribute, rather than stripping
+  // such characters wherever they occur — stripping alone still lets
+  // trailing injected content (e.g. "red; position: fixed") survive as
+  // "red position: fixed", just without its separating semicolon.
+  const cutIndex = str.search(/[;{}<>"'\\]/);
+  const truncated = cutIndex === -1 ? str : str.slice(0, cutIndex);
+  return truncated.trim();
 }
 
 export function buildCanvasObjectStyles(node) {

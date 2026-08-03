@@ -227,8 +227,8 @@ export class MathParser {
       case MT.LBRACKET: return this.parseBareDelim(MT.LBRACKET, MT.RBRACKET, '[', ']');
       case MT.RBRACKET: this.advance(); return A.mOperator(']');
       case MT.OP:
-        if (tok.value === '(') return this.parseBareDelim(MT.OP, MT.OP, '(', ')', '(', ')');
-        if (tok.value === '|') return this.parseBareDelim(MT.OP, MT.OP, '|', '|', '|', '|');
+        if (tok.value === '(') return this.parseBareDelim(MT.OP, MT.OP, '(', ')');
+        if (tok.value === '|') return this.parseBareDelim(MT.OP, MT.OP, '|', '|');
         this.advance(); return A.mOperator(tok.value);
       case MT.TEXT:   this.advance(); return A.mText(tok.value);
       case MT.COMMAND: return this.parseCommand();

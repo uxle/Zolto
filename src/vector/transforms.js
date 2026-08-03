@@ -33,7 +33,7 @@ export function buildTransformString(node) {
     }
   }
 
-  if (node.scale) {
+  if (node.scale !== null && node.scale !== undefined) {
     const val = String(node.scale).replace(/,/g, ' ');
     parts.push(`scale(${val})`);
   }

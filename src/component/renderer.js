@@ -50,7 +50,7 @@ export function renderComponentNode(node, context = {}, registry = null, renderB
       // Check if built-in string/function renderer
       if (compDef.body && compDef.body.length === 1 && typeof compDef.body[0] === 'function') {
         const rawHtml = compDef.body[0](slotContext);
-        return interpolateText(rawHtml, slotContext);
+        return interpolateText(rawHtml, slotContext, false);
       }
 
       // Expand body lines/nodes

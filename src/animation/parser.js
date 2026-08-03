@@ -90,7 +90,7 @@ function splitRootBlocks(src) {
 function parseAnimateDef(header, body) {
   const attrs   = parseAttrs(header.replace(/^@animate\s*/, ''));
   const name    = attrs.name || 'unnamed';
-  const dur     = parseDuration(attrs.duration || attrs.dur || 300);
+  const dur     = parseDuration(attrs.duration ?? attrs.dur ?? 300);
   const delay   = parseDuration(attrs.delay   || 0);
   const easing  = attrs.easing  || attrs.ease || 'ease';
   const animType = attrs.type   || attrs.animType || 'fade';

@@ -38,23 +38,29 @@ export function createSuite(name) {
     },
 
     /**
-     * Run all registered tests and return results.
-     * @returns {TestResult[]}
+     * Run all registered tests and return results. Awaits each test body
+     * sequentially, so both synchronous and `async` test functions are
+     * handled correctly — a synchronous function's return value awaits to
+     * itself, so this is safe for either kind of test, and sequential
+     * execution avoids introducing races between tests that share state.
+     * @returns {Promise<TestResult[]>}
      */
-    run() {
-      return tests.map(t => {
+    async run() {
+      const out = [];
+      for (const t of tests) {
         try {
-          t.fn();
-          return { suite: name, desc: t.desc, pass: true, error: null };
+          await t.fn();
+          out.push({ suite: name, desc: t.desc, pass: true, error: null });
         } catch (e) {
-          return {
+          out.push({
             suite: name,
             desc:  t.desc,
             pass:  false,
             error: e.message ?? String(e),
-          };
+          });
         }
-      });
+      }
+      return out;
     },
   };
 }
@@ -132,11 +138,17 @@ export function deepEq(actual, expected, msg) {
 
 /**
  * Run an array of suites and return a flat result list plus a summary.
+ * Suites (and the tests within them) run strictly sequentially, matching
+ * the original synchronous behavior — only the awaiting of each test body
+ * is new.
  * @param {Suite[]} suites
- * @returns {{ results: TestResult[], passed: number, failed: number, total: number }}
+ * @returns {Promise<{ results: TestResult[], passed: number, failed: number, total: number }>}
  */
-export function runSuites(suites) {
-  const results = suites.flatMap(s => s.run());
+export async function runSuites(suites) {
+  const results = [];
+  for (const s of suites) {
+    results.push(...(await s.run()));
+  }
   const passed  = results.filter(r => r.pass).length;
   const failed  = results.filter(r => !r.pass).length;
   return { results, passed, failed, total: results.length };

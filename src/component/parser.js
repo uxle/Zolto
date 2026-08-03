@@ -110,7 +110,16 @@ export function parseComponentSource(sourceText, options = {}) {
               advance();
               continue;
             }
-            if (st.type === ComponentTokenType.KEYWORD && (st.value.toLowerCase() === 'end' || st.value === '/slot')) {
+            if (st.type === ComponentTokenType.KEYWORD && st.value === '/slot') {
+              advance();
+              break;
+            }
+            if (st.type === ComponentTokenType.KEYWORD && st.value.toLowerCase() === 'end') {
+              // A bare `slot` marker with no fallback content has nothing
+              // of its own to close — this `end` belongs to whatever
+              // encloses it (the component definition, a parent slot,
+              // etc.), so leave it unconsumed for that outer loop to see.
+              if (fallbackLines.length === 0) break;
               advance();
               break;
             }
@@ -177,6 +186,10 @@ export function parseComponentSource(sourceText, options = {}) {
               continue;
             }
             if (st.type === ComponentTokenType.KEYWORD && st.value.toLowerCase() === 'end') {
+              // A bare `slot` marker with no fallback content has nothing
+              // of its own to close — this `end` belongs to the enclosing
+              // template definition, so leave it unconsumed.
+              if (fallback.length === 0) break;
               advance();
               break;
             }

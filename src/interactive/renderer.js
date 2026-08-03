@@ -177,7 +177,7 @@ function renderRadioGroup(node, opts) {
 
 function renderSelect(node, opts) {
   const id       = uid('select', node.name);
-  const labelEl  = renderFieldLabel(id, node.label, node.required);
+  const labelEl  = renderFieldLabel(id, node.label, node.required, node.ariaLabel);
   const multiAttr = node.multi ? ' multiple' : '';
   const searchAttr = node.searchable ? ' data-zl-searchable="true"' : '';
   const placeholder = node.placeholder ? `<option value="" disabled selected>${esc(node.placeholder)}</option>\n` : '';
