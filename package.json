@@ -1,6 +1,6 @@
 {
   "name": "zolto",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Zolto v1.0 Stable — Extended Markdown document engine ecosystem.",
   "type": "module",
   "bin": {
