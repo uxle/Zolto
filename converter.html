@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en" data-view="edit">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Zolto — High-Performance .zl to .js Standalone Bundle Converter">
+  <meta name="theme-color" content="#15171B">
+  <link rel="apple-touch-icon" href="assets/icons/logo/zolto-icon.svg">
+  <title>Zolto · .zl to .js Standalone Converter</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous">
+  
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/core/variables.css">
+  <link rel="stylesheet" href="css/core/reset.css">
+  <link rel="stylesheet" href="css/layout/app.css">
+  <link rel="stylesheet" href="css/components/buttons.css">
+  <link rel="stylesheet" href="css/components/modals.css">
+  <link rel="stylesheet" href="css/components/prose.css">
+
+  <style>
+    /* Converter Specific Enhancements */
+    :root {
+      --zl-accent-gradient: linear-gradient(135deg, #5B9DFA 0%, #9D7AFA 100%);
+    }
+
+    .converter-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-tagline {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+      margin-left: 4px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-radius: var(--radius-md);
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .nav-link-btn:hover {
+      color: var(--text-primary);
+      background: var(--bg-glass-soft);
+    }
+    .nav-link-btn.active {
+      color: var(--primary);
+      background: var(--primary-soft);
+    }
+
+    /* Tab navigation in output panel */
+    .out-tabs-hdr {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      background: var(--bg-surface-raised);
+      border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .tab-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .out-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: transparent;
+      border: none;
+    }
+    .out-tab:hover {
+      color: var(--text-primary);
+      background: var(--bg-glass-hover);
+    }
+    .out-tab.active {
+      color: var(--primary);
+      background: var(--primary-soft);
+    }
+
+    /* Configuration Bar inside Output Panel */
+    .config-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 0.78rem;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .config-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .config-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-secondary);
+    }
+
+    .config-select {
+      background: var(--bg-surface-raised);
+      color: var(--text-primary);
+      border: 1px solid var(--border-base);
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-family: inherit;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .config-select:focus {
+      border-color: var(--primary);
+    }
+
+    .config-stats {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+    }
+
+    /* Output Viewports */
+    .out-viewport {
+      flex: 1;
+      display: none;
+      overflow: hidden;
+      position: relative;
+      background: var(--bg-base);
+    }
+    .out-viewport.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Code Viewport with Line Numbers */
+    .code-viewport {
+      flex: 1;
+      display: flex;
+      overflow: auto;
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      line-height: 1.6;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      position: relative;
+    }
+
+    .code-content {
+      flex: 1;
+      padding: 16px;
+      white-space: pre;
+      font-family: var(--font-mono);
+      outline: none;
+      tab-size: 2;
+    }
+
+    /* Sandbox Iframe */
+    .sandbox-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: var(--bg-surface);
+    }
+
+    /* AST & Diagnostics View */
+    .diag-container {
+      flex: 1;
+      overflow: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .diag-card {
+      background: var(--bg-surface-raised);
+      border: 1px solid var(--border-base);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .diag-card-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Drag and Drop Overlay */
+    .drop-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(11, 13, 15, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      border: 2px dashed var(--primary);
+      margin: 12px;
+      border-radius: var(--radius-lg);
+      pointer-events: none;
+    }
+    .drop-overlay.active {
+      display: flex;
+    }
+
+    /* Toast Notification */
+    .converter-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--bg-surface-raised);
+      border: 1px solid var(--border-strong);
+      color: var(--text-primary);
+      padding: 10px 18px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 9999;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+    .converter-toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Editor line wrapper */
+    .editor-wrapper {
+      flex: 1;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .editor-textarea {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      padding: var(--space-3);
+      background: transparent;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      line-height: 1.7;
+      caret-color: var(--primary);
+      tab-size: 2;
+      resize: none;
+      border: none;
+      outline: none;
+    }
+
+    /* Sample selector dropdown */
+    .sample-select {
+      background: var(--bg-surface-raised);
+      color: var(--text-primary);
+      border: 1px solid var(--border-base);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-family: inherit;
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* Action bar buttons in header */
+    .btn-gradient {
+      background: var(--zl-accent-gradient);
+      color: #fff;
+      font-weight: 600;
+      border: none;
+      box-shadow: 0 4px 14px rgba(91, 157, 250, 0.35);
+    }
+    .btn-gradient:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(91, 157, 250, 0.5);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 900px) {
+      .ed-panel { flex: 1 1 100% !important; }
+      .canvas { display: none; }
+      html[data-view="preview"] .ed-panel { display: none; }
+      html[data-view="preview"] .canvas { display: flex; flex: 1 1 100% !important; }
+      .view-switch { display: flex !important; }
+      .brand-tagline { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <header class="hdr">
+    <div class="brand">
+      <a href="index.html" class="converter-brand" title="Back to Zolto Studio">
+        <img src="assets/icons/logo/zolto_color.svg" alt="Zolto Logo" style="width: 26px; height: 26px; display: block;">
+        <span class="brand-name">Zolto</span>
+      </a>
+      <span class="brand-badge">.zl → .js Converter</span>
+      <span class="brand-tagline">Pre-included CSS · JS · HTML Bundle</span>
+    </div>
+
+    <!-- Navigation links -->
+    <div class="nav-links">
+      <a href="index.html" class="nav-link-btn" title="Open Standard Document Editor"><i class="fa-solid fa-feather-pointed"></i> <span>Studio</span></a>
+      <div style="width: 1px; height: 16px; background: var(--border-subtle); margin: 0 4px;"></div>
+      <div class="config-item">
+        <label for="sample-picker" style="font-size: 0.72rem; color: var(--text-tertiary);">Sample:</label>
+        <select id="sample-picker" class="sample-select" title="Load sample document">
+          <option value="showcase">Full Feature Showcase</option>
+          <option value="quiz">Interactive Quiz & Flashcards</option>
+          <option value="diagrams">Diagrams & Flowcharts</option>
+          <option value="charts">Charts & Analytics</option>
+          <option value="layouts">Spatial Layout & Cards</option>
+          <option value="math">Mathematics & Science</option>
+          <option value="minimal">Minimal Note</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Mobile view switch -->
+    <div class="view-switch">
+      <button class="btn btn-sm btn-secondary active" data-view="edit" tabindex="0"><i class="fa-solid fa-pen-to-square"></i></button>
+      <button class="btn btn-sm btn-ghost" data-view="preview" tabindex="0"><i class="fa-solid fa-eye"></i></button>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="controls">
+      <button class="btn btn-icon btn-ghost" id="btn-open-file" title="Upload / Open .zl file (Ctrl+O)" tabindex="0"><i class="fa-solid fa-upload"></i></button>
+      <button class="btn btn-secondary btn-sm" id="btn-copy-js" title="Copy standalone JS to clipboard" tabindex="0"><i class="fa-solid fa-copy"></i> <span>Copy .js</span></button>
+      <button class="btn btn-primary btn-sm btn-gradient" id="btn-download-js" title="Download standalone .js bundle" tabindex="0"><i class="fa-solid fa-file-code"></i> <span>Download .js</span></button>
+      <button class="btn btn-icon btn-ghost" id="btn-batch-modal" title="Batch Converter" tabindex="0"><i class="fa-solid fa-layer-group"></i></button>
+    </div>
+  </header>
+
+  <!-- WORKSPACE -->
+  <div class="workspace" id="workspace-root">
+
+    <!-- DROP OVERLAY -->
+    <div class="drop-overlay" id="drop-overlay">
+      <i class="fa-solid fa-cloud-arrow-up" style="font-size: 42px; color: var(--primary);"></i>
+      <div style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary);">Drop .zl or .md file here</div>
+      <div style="font-size: 0.8rem; color: var(--text-secondary);">Instant conversion to standalone .js bundle</div>
+    </div>
+
+    <!-- LEFT PANEL: SOURCE EDITOR -->
+    <aside class="ed-panel" id="ed-panel" style="flex: 0 0 46%;">
+      <div class="ed-hdr">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="lx-badge lx-badge-blue" id="file-name-badge">source.zl</span>
+          <span id="char-count" style="opacity:.6; font-size: 0.7rem;">0 chars</span>
+        </div>
+        <div class="ed-hdr-r" style="display:flex; align-items:center; gap:8px;">
+          <span id="line-count" style="opacity:.6; font-size: 0.7rem;">0 lines</span>
+          <button class="btn btn-sm btn-ghost" id="btn-clear-editor" title="Clear Editor" style="height: 24px; padding: 0 6px; font-size: 0.7rem;"><i class="fa-solid fa-trash-can"></i></button>
+        </div>
+      </div>
+
+      <!-- Formatting Toolbar -->
+      <div class="toolbar" role="toolbar" aria-label="Formatting">
+        <button class="btn btn-sm btn-icon btn-ghost tb" data-wrap="**" title="Bold (Ctrl+B)" tabindex="0"><i class="fa-solid fa-bold"></i></button>
+        <button class="btn btn-sm btn-icon btn-ghost tb" data-wrap="*" title="Italic (Ctrl+I)" tabindex="0"><i class="fa-solid fa-italic"></i></button>
+        <button class="btn btn-sm btn-icon btn-ghost tb" data-wrap="~~" title="Strikethrough" tabindex="0"><i class="fa-solid fa-strikethrough"></i></button>
+        <button class="btn btn-sm btn-icon btn-ghost tb" data-wrap="==" title="Highlight" tabindex="0"><i class="fa-solid fa-highlighter"></i></button>
+        <button class="btn btn-sm btn-icon btn-ghost tb" data-wrap="`" title="Inline code" tabindex="0"><i class="fa-solid fa-terminal"></i></button>
+        <div style="width:1px; height:16px; background:var(--border-subtle); margin:0 4px; flex-shrink: 0;"></div>
+        <button class="btn btn-sm btn-icon btn-ghost tb" data-insert="# " title="Heading 1" tabindex="0"><i class="fa-solid fa-heading"></i></button>
+        <button class="btn btn-sm btn-icon btn-ghost tb" data-insert="- " title="Bullet list" tabindex="0"><i class="fa-solid fa-list-ul"></i></button>
+        <button class="btn btn-sm btn-icon btn-ghost tb" data-insert="- [ ] " title="Task checkbox" tabindex="0"><i class="fa-solid fa-list-check"></i></button>
+        <button class="btn btn-sm btn-icon btn-ghost tb" data-insert="---\n" title="Divider" tabindex="0"><i class="fa-solid fa-ruler-horizontal"></i></button>
+        <button class="btn btn-sm btn-icon btn-ghost tb" data-block="```javascript\n" title="Code block" tabindex="0"><i class="fa-solid fa-file-code"></i></button>
+        <div style="width:1px; height:16px; background:var(--border-subtle); margin:0 4px; flex-shrink: 0;"></div>
+        <button class="btn btn-sm btn-icon btn-ghost tb" data-block="> [!NOTE]\n> " title="Callout Note" tabindex="0"><i class="fa-solid fa-quote-left"></i></button>
+        <button class="btn btn-sm btn-icon btn-ghost tb" data-block="[info]\n" data-block-close="\n[/info]" title="Admonition" tabindex="0"><i class="fa-solid fa-circle-info"></i></button>
+        <button class="btn btn-sm btn-icon btn-ghost tb" data-block="@diagram flowchart\n  Start -> Process\n  Process -> End\n" data-block-close="\n@/diagram" title="Insert Diagram" tabindex="0"><i class="fa-solid fa-diagram-project"></i></button>
+        <button class="btn btn-sm btn-icon btn-ghost tb" data-block="@chart bar title=&quot;Quarterly Revenue&quot;\nlabels:\n  Q1\n  Q2\n  Q3\n  Q4\ndata:\n  120\n  210\n  190\n  340\n" data-block-close="\n@/chart" title="Insert Chart" tabindex="0"><i class="fa-solid fa-chart-column"></i></button>
+        <button class="btn btn-sm btn-icon btn-ghost tb" data-block="@quiz id=&quot;q1&quot; title=&quot;Knowledge Check&quot;\nopt text=&quot;Option A&quot; correct=true\nopt text=&quot;Option B&quot; correct=false\n" data-block-close="\n@/quiz" title="Insert Interactive Quiz" tabindex="0"><i class="fa-solid fa-circle-question"></i></button>
+      </div>
+
+      <!-- Editor Textarea Area -->
+      <div class="editor-wrapper">
+        <textarea id="editor" class="editor-textarea" spellcheck="false" aria-label="Zolto source code" placeholder="Write or paste your .zl document here, or drag & drop a .zl file..."></textarea>
+      </div>
+
+      <!-- Editor Bottom Status Bar -->
+      <div class="status">
+        <span id="s-errors" class="s-ok"><i class="fa-solid fa-circle-check"></i> 0 errors</span>
+        <span>·</span>
+        <span id="s-warn">0 warnings</span>
+        <span>·</span>
+        <span id="s-time">0 ms</span>
+      </div>
+    </aside>
+
+    <!-- RESIZE HANDLE -->
+    <div class="divider" id="divider" title="Drag to resize panels" aria-hidden="true" tabindex="-1"></div>
+
+    <!-- RIGHT PANEL: TABBED OUTPUTS & PREVIEWS -->
+    <main class="canvas" id="canvas">
+      
+      <!-- Tab Header -->
+      <div class="out-tabs-hdr">
+        <div class="tab-group">
+          <button class="out-tab active" data-tab="tab-js"><i class="fa-solid fa-file-code" style="color: var(--primary);"></i> <span>Generated .js</span></button>
+          <button class="out-tab" data-tab="tab-preview"><i class="fa-solid fa-eye" style="color: var(--accent-green);"></i> <span>Live Preview</span></button>
+          <button class="out-tab" data-tab="tab-sandbox"><i class="fa-solid fa-flask" style="color: var(--accent-purple);"></i> <span>Isolated Sandbox</span></button>
+          <button class="out-tab" data-tab="tab-html"><i class="fa-brands fa-html5" style="color: var(--accent-amber);"></i> <span>HTML</span></button>
+          <button class="out-tab" data-tab="tab-css"><i class="fa-brands fa-css3-alt" style="color: #38bdf8;"></i> <span>CSS</span></button>
+          <button class="out-tab" data-tab="tab-ast"><i class="fa-solid fa-tree"></i> <span>AST</span></button>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span id="js-size-badge" class="lx-badge lx-badge-green" style="font-family: var(--font-mono);">0 KB</span>
+        </div>
+      </div>
+
+      <!-- Configuration Toolbar -->
+      <div class="config-bar">
+        <div class="config-controls">
+          <div class="config-item">
+            <label for="bundle-format">Format:</label>
+            <select id="bundle-format" class="config-select">
+              <option value="universal">Universal (UMD + ESM + Auto-Mount)</option>
+              <option value="webcomponent">Web Component (&lt;zolto-document&gt;)</option>
+              <option value="iife">Self-Mounting Widget (IIFE)</option>
+              <option value="esm">Clean ES Module (ESM)</option>
+            </select>
+          </div>
+
+          <div class="config-item">
+            <label for="bundle-theme">Theme:</label>
+            <select id="bundle-theme" class="config-select">
+              <option value="dark">Dark Theme (Default)</option>
+              <option value="light">Light Theme</option>
+              <option value="eyeprotection">Eye Protection</option>
+            </select>
+          </div>
+
+          <div class="config-item">
+            <label for="bundle-target">Target Selector:</label>
+            <input type="text" id="bundle-target" value="#app" class="config-select" style="width: 80px; font-family: var(--font-mono);" title="DOM element selector to mount to">
+          </div>
+        </div>
+
+        <div class="config-stats">
+          <span id="gzip-estimate" title="Estimated gzip size">~0 KB gz</span>
+          <span>·</span>
+          <button class="btn btn-sm btn-ghost" id="btn-quick-download-html" title="Download standalone HTML file" style="height: 24px; padding: 0 6px;"><i class="fa-solid fa-download"></i> .html</button>
+        </div>
+      </div>
+
+      <!-- TAB 1: GENERATED .JS OUTPUT -->
+      <section class="out-viewport active" id="tab-js">
+        <div class="code-viewport">
+          <div id="js-output-code" class="code-content" spellcheck="false" contenteditable="false"></div>
+        </div>
+      </section>
+
+      <!-- TAB 2: LIVE DOCUMENT PREVIEW -->
+      <section class="out-viewport" id="tab-preview">
+        <div class="canvas-scroll" style="padding: clamp(1rem, 2.5vw, 2.5rem);">
+          <div id="live-preview-container"></div>
+        </div>
+      </section>
+
+      <!-- TAB 3: ISOLATED SANDBOX RUNNER -->
+      <section class="out-viewport" id="tab-sandbox">
+        <iframe id="sandbox-iframe" class="sandbox-frame" sandbox="allow-scripts allow-same-origin" title="Zolto Standalone JS Sandbox"></iframe>
+      </section>
+
+      <!-- TAB 4: COMPILED HTML -->
+      <section class="out-viewport" id="tab-html">
+        <div class="code-viewport">
+          <div id="html-output-code" class="code-content"></div>
+        </div>
+      </section>
+
+      <!-- TAB 5: BUNDLED CSS -->
+      <section class="out-viewport" id="tab-css">
+        <div class="code-viewport">
+          <div id="css-output-code" class="code-content"></div>
+        </div>
+      </section>
+
+      <!-- TAB 6: AST & DIAGNOSTICS -->
+      <section class="out-viewport" id="tab-ast">
+        <div class="diag-container">
+          <div class="diag-card">
+            <div class="diag-card-title"><i class="fa-solid fa-chart-pie" style="color: var(--primary);"></i> Document Structure & Diagnostics</div>
+            <div id="diag-summary" style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 12px;"></div>
+            <div id="diag-errors-list"></div>
+          </div>
+          <div class="diag-card">
+            <div class="diag-card-title"><i class="fa-solid fa-code-branch" style="color: var(--accent-purple);"></i> AST Abstract Syntax Tree (JSON)</div>
+            <pre style="margin: 0; background: var(--bg-base); padding: 12px; border-radius: var(--radius-sm); max-height: 400px; overflow: auto;"><code id="ast-output-json" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary);"></code></pre>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div><!-- /workspace -->
+</div><!-- /app -->
+
+<!-- Hidden File Input -->
+<input type="file" id="file-input" accept=".zl,.md,.txt" style="display:none">
+<input type="file" id="batch-file-input" accept=".zl,.md,.txt" multiple style="display:none">
+
+<!-- BATCH CONVERTER MODAL -->
+<div class="lx-modal-backdrop" id="batch-modal" role="dialog" aria-modal="true" aria-label="Batch .zl Converter">
+  <div class="lx-modal-box" style="max-width: 600px;">
+    <div class="lx-modal-head">
+      <div class="lx-modal-title"><i class="fa-solid fa-layer-group" style="color: var(--primary);"></i> Batch .zl to .js Converter</div>
+      <button class="btn btn-icon btn-ghost" id="btn-batch-close" title="Close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="lx-modal-body">
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">Select or drop multiple <code>.zl</code> files to convert all of them into standalone ready-to-run <code>.js</code> bundles instantly.</p>
+      <div style="border: 2px dashed var(--border-base); border-radius: var(--radius-md); padding: 24px; text-align: center; cursor: pointer; background: var(--bg-glass-soft);" id="batch-drop-box">
+        <i class="fa-solid fa-folder-open" style="font-size: 32px; color: var(--primary); margin-bottom: 8px;"></i>
+        <div style="font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Click to select files or drag & drop here</div>
+        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Supports .zl, .md, .txt files</div>
+      </div>
+      <div id="batch-file-list" style="margin-top: 16px; max-height: 200px; overflow: auto; display: flex; flex-direction: column; gap: 8px;"></div>
+    </div>
+    <div class="lx-modal-foot" style="justify-content: space-between;">
+      <span id="batch-count-label" style="font-size: 0.78rem; color: var(--text-secondary);">0 files selected</span>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-secondary btn-sm" id="btn-batch-cancel">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="btn-batch-download-all" disabled><i class="fa-solid fa-download"></i> Convert & Download All</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST NOTIFICATION -->
+<div class="converter-toast" id="toast">
+  <i id="toast-icon" class="fa-solid fa-circle-check" style="color: var(--accent-green);"></i>
+  <span id="toast-msg">Copied to clipboard!</span>
+</div>
+
+<script type="module">
+import { compile, parse } from './src/zolto.js';
+import { generateJsBundle, ZOLTO_EMBEDDED_CSS } from './js/export/formats/js-bundle-export.js';
+
+// ── Sample Templates ──────────────────────────────────────────────────────────
+const SAMPLES = {
+  showcase: `---
+title: Zolto Standalone Bundle Showcase
+author: Zolto Architecture Team
+version: 15.0.0
+---
+
+# Welcome to Zolto Standalone JS Bundle 🚀
+
+> [!NOTE]
+> This document was compiled from a \`.zl\` file into a self-contained \`.js\` bundle. It includes **CSS styles**, **HTML markup**, and **Interactive JS runtime** all in one single file!
+
+---
+
+## 1. High-Performance Native Flowcharts
+
+@diagram flowchart
+  Source[Source .zl File] -> Compiler[Zolto Engine]
+  Compiler -> Bundle[Standalone .js Bundle]
+  Bundle -> WebPage[Any Browser or Web App]
+@/diagram
+
+---
+
+## 2. Built-in Analytics & Charts
+
+@chart bar title="Document Engine Speed (pages/sec)"
+labels:
+  Zolto Native
+  Traditional Parser
+  Heavy Framework
+data:
+  950
+  280
+  110
+@/chart
+
+---
+
+## 3. Interactive Educational Assessment
+
+@quiz "Zolto Engine Knowledge Check" {
+  @mcq "Does Zolto require external runtime libraries?" {
+    @correct "No, compiles to zero-dependency standalone bundles"
+    @choice "Yes, requires React and Webpack"
+    @choice "Yes, requires Python server"
+  }
+}
+@/quiz
+
+---
+
+## 4. Flashcard Study Deck
+
+@deck CSConcepts {
+  @card
+    front "Zolto Document"
+    back "An extended Markdown format with native diagrams, charts, and educational interactivity."
+  @end
+  @card
+    front ".js Standalone Bundle"
+    back "A self-contained JavaScript file with pre-included CSS, JS interactivity, and semantic HTML."
+  @end
+}
+@/deck
+
+---
+
+## 5. Code Blocks with Instant Copy
+
+\`\`\`javascript
+// Import and mount your document anywhere!
+import doc from './my-document.zl.js';
+
+// Mount into any DOM element with full interactivity
+doc.mount('#app');
+\`\`\`
+`,
+
+  quiz: `# Interactive Quiz & Knowledge Assessment
+
+Test your skills with interactive quizzes and flashcards built natively in Zolto.
+
+@quiz "Web Architecture Assessment" {
+  @mcq "Which standard enables CSS style encapsulation?" {
+    @correct "Shadow DOM"
+    @choice "Canvas API"
+    @choice "Web Sockets"
+  }
+  @multi "Select modern JavaScript module formats:" {
+    @correct "ES Modules (ESM)"
+    @correct "Universal Module Definition (UMD)"
+    @choice "CSS Grid"
+  }
+}
+@/quiz
+
+@deck WebDev {
+  @card
+    front "Universal Module Definition (UMD)"
+    back "A pattern allowing a JavaScript module to run in ESM, CommonJS, and browser script tags."
+  @end
+  @card
+    front "Shadow DOM"
+    back "A browser standard that isolates CSS styles and DOM subtrees from the parent document."
+  @end
+}
+@/deck
+`,
+
+  diagrams: `# System Architecture & Flowcharts
+
+@diagram flowchart
+  Client[Browser Client] -> Gateway[API Gateway]
+  Gateway -> AuthService[Auth Service]
+  Gateway -> DocService[Document Engine]
+  DocService -> Cache[(In-Memory Cache)]
+  DocService -> DB[(Database Storage)]
+@/diagram
+
+> [!TIP]
+> Zolto diagrams are rendered directly as accessible, crisp vector SVGs without any third-party diagramming libraries!
+`,
+
+  charts: `# Quarterly Metrics & Performance
+
+@chart bar title="Monthly Active Users (Thousands)"
+labels:
+  Jan
+  Feb
+  Mar
+  Apr
+  May
+  Jun
+data:
+  45
+  78
+  112
+  145
+  198
+  260
+@/chart
+
+@chart line title="Latency Trend (ms)"
+labels:
+  v1.0
+  v2.0
+  v3.0
+  v4.0
+data:
+  85
+  42
+  18
+  6
+@/chart
+`,
+
+  layouts: `# Spatial Layouts & Responsive Cards
+
+@layout width=100% padding=24 gap=16
+  @grid columns=2 gap=16
+    @cell
+      @card title="High Performance" variant="info"
+        Zolto processes over 10,000 nodes in milliseconds with sub-millisecond AST transformations.
+      @/card
+    @/cell
+    @cell
+      @card title="Zero Dependencies" variant="success"
+        Built entirely from scratch with native JavaScript, CSS variables, and SVG rendering.
+      @/card
+    @/cell
+  @/grid
+@/layout
+`,
+
+  math: `# Mathematical Formulas & Physics
+
+When studying quantum physics, wave functions are defined as:
+
+@math
+\Psi(x, t) = A e^{i(kx - \omega t)}
+@/math
+
+Einstein's famous mass-energy equivalence relation:
+
+@math
+E = mc^2
+@/math
+`,
+
+  minimal: `# Minimal Zolto Document
+
+This is a clean, minimal \`.zl\` file ready to be converted into a standalone \`.js\` bundle.
+
+- Fast compilation
+- Pre-included styles
+- Ready for production
+`
+};
+
+// ── DOM References ────────────────────────────────────────────────────────────
+const editor           = document.getElementById('editor');
+const livePreview      = document.getElementById('live-preview-container');
+const jsOutputCode     = document.getElementById('js-output-code');
+const htmlOutputCode   = document.getElementById('html-output-code');
+const cssOutputCode    = document.getElementById('css-output-code');
+const astOutputJson    = document.getElementById('ast-output-json');
+const sandboxIframe    = document.getElementById('sandbox-iframe');
+
+const sErrors          = document.getElementById('s-errors');
+const sWarn            = document.getElementById('s-warn');
+const sTime            = document.getElementById('s-time');
+const charCount        = document.getElementById('char-count');
+const lineCount        = document.getElementById('line-count');
+const jsSizeBadge      = document.getElementById('js-size-badge');
+const gzipEstimate     = document.getElementById('gzip-estimate');
+const fileNameBadge    = document.getElementById('file-name-badge');
+
+const bundleFormatSel  = document.getElementById('bundle-format');
+const bundleThemeSel   = document.getElementById('bundle-theme');
+const bundleTargetInp  = document.getElementById('bundle-target');
+const samplePicker     = document.getElementById('sample-picker');
+
+const btnCopyJs        = document.getElementById('btn-copy-js');
+const btnDownloadJs    = document.getElementById('btn-download-js');
+const btnQuickDlHtml   = document.getElementById('btn-quick-download-html');
+const btnOpenFile      = document.getElementById('btn-open-file');
+const fileInput        = document.getElementById('file-input');
+const btnClearEditor   = document.getElementById('btn-clear-editor');
+
+const toast            = document.getElementById('toast');
+const toastMsg         = document.getElementById('toast-msg');
+const toastIcon        = document.getElementById('toast-icon');
+
+const dropOverlay      = document.getElementById('drop-overlay');
+const workspaceRoot    = document.getElementById('workspace-root');
+
+// Batch Modal Elements
+const batchModal       = document.getElementById('batch-modal');
+const btnBatchModal    = document.getElementById('btn-batch-modal');
+const btnBatchClose    = document.getElementById('btn-batch-close');
+const btnBatchCancel   = document.getElementById('btn-batch-cancel');
+const batchDropBox     = document.getElementById('batch-drop-box');
+const batchFileInput   = document.getElementById('batch-file-input');
+const batchFileList    = document.getElementById('batch-file-list');
+const batchCountLabel  = document.getElementById('batch-count-label');
+const btnBatchDlAll    = document.getElementById('btn-batch-download-all');
+
+let currentFileName = 'document.zl';
+let generatedBundle = null;
+let batchFiles = [];
+
+// ── Toast Helper ──────────────────────────────────────────────────────────────
+function showToast(message, isSuccess = true) {
+  toastMsg.textContent = message;
+  toastIcon.className = isSuccess ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation';
+  toastIcon.style.color = isSuccess ? 'var(--accent-green)' : 'var(--accent-amber)';
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2400);
+}
+
+// ── Syntax Highlight Helper (Lightweight Code Formatter) ──────────────────────
+function highlightCode(code, lang = 'javascript') {
+  const escaped = code
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  
+  if (lang === 'javascript') {
+    return escaped
+      .replace(/(\/\*[\s\S]*?\*\/|\/\/[^\n]*)/g, '<span style="color:#64748b; font-style:italic;">$1</span>')
+      .replace(/\b(const|let|var|function|return|import|export|default|if|else|class|new|typeof|null|undefined|true|false)\b/g, '<span style="color:#93c5fd; font-weight:600;">$1</span>')
+      .replace(/\b(document|window|customElements|HTMLElement|navigator|console)\b/g, '<span style="color:#f472b6;">$1</span>')
+      .replace(/(".*?"|'.*?'|`[\s\S]*?`)/g, '<span style="color:#86efac;">$1</span>');
+  }
+  return escaped;
+}
+
+// ── Recompile & Convert Pipeline ──────────────────────────────────────────────
+let renderTimeout = null;
+
+function recompile() {
+  const src = editor.value;
+  const t0 = performance.now();
+
+  const format = bundleFormatSel.value;
+  const theme = bundleThemeSel.value;
+  const targetSelector = bundleTargetInp.value || '#app';
+
+  // 1. Parse diagnostics
+  const { ast, errors, warnings } = parse(src);
+  
+  // 2. Generate JS bundle
+  generatedBundle = generateJsBundle(src, {
+    format,
+    theme,
+    targetSelector,
+    title: currentFileName.replace(/\.zl$/i, '')
+  });
+
+  const durationMs = (performance.now() - t0).toFixed(1);
+
+  // 3. Update telemetry and stats
+  const charLen = src.length;
+  const linesLen = src.split('\n').length;
+  const jsBytes = generatedBundle.metadata.sizeBytes;
+  const jsKb = (jsBytes / 1024).toFixed(1);
+  const gzipKb = (jsBytes * 0.28 / 1024).toFixed(1); // gzip estimation
+
+  charCount.textContent = `${charLen} chars`;
+  lineCount.textContent = `${linesLen} lines`;
+  sTime.textContent = `${durationMs} ms`;
+  jsSizeBadge.textContent = `${jsKb} KB`;
+  gzipEstimate.textContent = `~${gzipKb} KB gz`;
+
+  // Status error indicators
+  if (errors.length) {
+    sErrors.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${errors.length} error${errors.length > 1 ? 's' : ''}`;
+    sErrors.className = 's-err';
+  } else {
+    sErrors.innerHTML = `<i class="fa-solid fa-circle-check"></i> 0 errors`;
+    sErrors.className = 's-ok';
+  }
+
+  if (warnings.length) {
+    sWarn.textContent = `${warnings.length} warning${warnings.length > 1 ? 's' : ''}`;
+    sWarn.className = 's-warn';
+  } else {
+    sWarn.textContent = '0 warnings';
+    sWarn.className = '';
+  }
+
+  // 4. Update Viewports
+  // A. Generated JS code view
+  jsOutputCode.innerHTML = highlightCode(generatedBundle.js, 'javascript');
+
+  // B. Live preview
+  livePreview.innerHTML = generatedBundle.html;
+  // Initialize interactivity on live preview
+  if (window.ZoltoInteractivityRuntime) {
+    window.ZoltoInteractivityRuntime(livePreview);
+  } else {
+    // Execute built-in runtime
+    const initScript = new Function('root', generatedBundle.js.match(/function initZoltoInteractivity[\s\S]*?^}/m)?.[0] + '\ninitZoltoInteractivity(root);');
+    try { initScript(livePreview); } catch (e) {}
+  }
+
+  // C. Standalone HTML view
+  htmlOutputCode.textContent = generatedBundle.html;
+
+  // D. Bundled CSS view
+  cssOutputCode.textContent = generatedBundle.css;
+
+  // E. AST & Diagnostics
+  astOutputJson.textContent = JSON.stringify(ast, null, 2);
+  const diagSummary = document.getElementById('diag-summary');
+  const diagErrorsList = document.getElementById('diag-errors-list');
+  diagSummary.innerHTML = `Nodes: <strong>${generatedBundle.metadata.nodeCount}</strong> · Parse Time: <strong>${durationMs}ms</strong> · Size: <strong>${jsKb} KB</strong>`;
+  
+  if (errors.length || warnings.length) {
+    diagErrorsList.innerHTML = [
+      ...errors.map(e => `<div style="color:var(--accent-red); font-size:0.75rem; margin-top:4px;"><i class="fa-solid fa-xmark"></i> ${e}</div>`),
+      ...warnings.map(w => `<div style="color:var(--accent-amber); font-size:0.75rem; margin-top:4px;"><i class="fa-solid fa-triangle-exclamation"></i> ${w}</div>`)
+    ].join('');
+  } else {
+    diagErrorsList.innerHTML = `<div style="color:var(--accent-green); font-size:0.75rem;"><i class="fa-solid fa-check"></i> Document AST validated cleanly with no issues.</div>`;
+  }
+
+  // F. Sandbox Frame Update (if active tab)
+  updateSandboxIframe();
+}
+
+function updateSandboxIframe() {
+  const activeTab = document.querySelector('.out-tab.active')?.dataset?.tab;
+  if (activeTab === 'tab-sandbox' && generatedBundle) {
+    const sandboxDoc = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Sandbox</title>
+  <style>
+    body { margin: 0; padding: 20px; background: #0B0D0F; color: #F4F5F7; font-family: sans-serif; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    ${generatedBundle.js}
+  <\/script>
+</body>
+</html>`;
+    sandboxIframe.srcdoc = sandboxDoc;
+  }
+}
+
+// ── Tab Navigation ────────────────────────────────────────────────────────────
+document.querySelectorAll('.out-tab').forEach(tabBtn => {
+  tabBtn.addEventListener('click', () => {
+    document.querySelectorAll('.out-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.out-viewport').forEach(v => v.classList.remove('active'));
+
+    tabBtn.classList.add('active');
+    const targetViewport = document.getElementById(tabBtn.dataset.tab);
+    if (targetViewport) targetViewport.classList.add('active');
+
+    if (tabBtn.dataset.tab === 'tab-sandbox') {
+      updateSandboxIframe();
+    }
+  });
+});
+
+// ── Input Listeners ───────────────────────────────────────────────────────────
+editor.addEventListener('input', () => {
+  clearTimeout(renderTimeout);
+  renderTimeout = setTimeout(recompile, 80);
+});
+
+[bundleFormatSel, bundleThemeSel, bundleTargetInp].forEach(el => {
+  el.addEventListener('change', recompile);
+});
+
+samplePicker.addEventListener('change', () => {
+  const val = samplePicker.value;
+  if (SAMPLES[val]) {
+    editor.value = SAMPLES[val];
+    currentFileName = `${val}.zl`;
+    fileNameBadge.textContent = currentFileName;
+    recompile();
+    showToast(`Loaded ${samplePicker.options[samplePicker.selectedIndex].text}`);
+  }
+});
+
+btnClearEditor.addEventListener('click', () => {
+  editor.value = '';
+  recompile();
+  editor.focus();
+  showToast('Editor cleared');
+});
+
+// ── Copy & Download Handlers ──────────────────────────────────────────────────
+btnCopyJs.addEventListener('click', async () => {
+  if (!generatedBundle?.js) return;
+  try {
+    await navigator.clipboard.writeText(generatedBundle.js);
+    showToast('Copied standalone .js bundle to clipboard!');
+  } catch (err) {
+    showToast('Failed to copy', false);
+  }
+});
+
+btnDownloadJs.addEventListener('click', () => {
+  if (!generatedBundle?.js) return;
+  const outName = currentFileName.replace(/\.zl$/i, '') + '.zl.js';
+  const blob = new Blob([generatedBundle.js], { type: 'application/javascript;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = outName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast(`Downloaded ${outName}`);
+});
+
+btnQuickDlHtml.addEventListener('click', () => {
+  if (!generatedBundle) return;
+  const fullHtmlDoc = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${currentFileName.replace(/\.zl$/i, '')}</title>
+  <style>
+    ${ZOLTO_EMBEDDED_CSS}
+    body { margin: 0; padding: 24px; background: var(--zl-bg-base); }
+  </style>
+</head>
+<body>
+  ${generatedBundle.html}
+  <script>
+    ${generatedBundle.js.match(/function initZoltoInteractivity[\s\S]*?^}/m)?.[0] || ''}
+    if (typeof initZoltoInteractivity === 'function') {
+      initZoltoInteractivity(document);
+    }
+  <\/script>
+</body>
+</html>`;
+
+  const outName = currentFileName.replace(/\.zl$/i, '') + '.html';
+  const blob = new Blob([fullHtmlDoc], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = outName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast(`Downloaded ${outName}`);
+});
+
+// ── File Upload Handlers ──────────────────────────────────────────────────────
+btnOpenFile.addEventListener('click', () => fileInput.click());
+
+fileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  readFile(file);
+});
+
+function readFile(file) {
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    editor.value = evt.target.result;
+    currentFileName = file.name;
+    fileNameBadge.textContent = currentFileName;
+    recompile();
+    showToast(`Loaded ${file.name}`);
+  };
+  reader.readAsText(file);
+}
+
+// ── Drag & Drop Handlers ──────────────────────────────────────────────────────
+['dragenter', 'dragover'].forEach(eventName => {
+  workspaceRoot.addEventListener(eventName, (e) => {
+    e.preventDefault();
+    dropOverlay.classList.add('active');
+  });
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+  workspaceRoot.addEventListener(eventName, (e) => {
+    e.preventDefault();
+    dropOverlay.classList.remove('active');
+  });
+});
+
+workspaceRoot.addEventListener('drop', (e) => {
+  e.preventDefault();
+  const files = e.dataTransfer.files;
+  if (files.length === 1) {
+    readFile(files[0]);
+  } else if (files.length > 1) {
+    openBatchModalWithFiles(Array.from(files));
+  }
+});
+
+// ── Batch Converter ───────────────────────────────────────────────────────────
+btnBatchModal.addEventListener('click', () => {
+  batchModal.classList.add('open');
+});
+[btnBatchClose, btnBatchCancel].forEach(b => b.addEventListener('click', () => batchModal.classList.remove('open')));
+
+batchDropBox.addEventListener('click', () => batchFileInput.click());
+
+batchFileInput.addEventListener('change', (e) => {
+  openBatchModalWithFiles(Array.from(e.target.files));
+});
+
+function openBatchModalWithFiles(files) {
+  batchFiles = files.filter(f => f.name.endsWith('.zl') || f.name.endsWith('.md') || f.name.endsWith('.txt'));
+  batchModal.classList.add('open');
+  renderBatchFileList();
+}
+
+function renderBatchFileList() {
+  batchCountLabel.textContent = `${batchFiles.length} file${batchFiles.length !== 1 ? 's' : ''} selected`;
+  btnBatchDlAll.disabled = batchFiles.length === 0;
+
+  batchFileList.innerHTML = batchFiles.map((f, idx) => `
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:var(--bg-surface-raised); border-radius:var(--radius-sm); border:1px solid var(--border-subtle); font-size:0.8rem;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <i class="fa-solid fa-file-code" style="color:var(--primary);"></i>
+        <span style="font-weight:600; color:var(--text-primary);">${f.name}</span>
+        <span style="color:var(--text-tertiary); font-size:0.7rem;">(${(f.size/1024).toFixed(1)} KB)</span>
+      </div>
+      <button class="btn btn-sm btn-ghost" onclick="window.removeBatchFile(${idx})" style="height:22px; padding:0 6px;"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+  `).join('');
+}
+
+window.removeBatchFile = function(idx) {
+  batchFiles.splice(idx, 1);
+  renderBatchFileList();
+};
+
+btnBatchDlAll.addEventListener('click', async () => {
+  if (!batchFiles.length) return;
+  showToast(`Converting ${batchFiles.length} files...`);
+
+  for (const file of batchFiles) {
+    const text = await file.text();
+    const bundle = generateJsBundle(text, {
+      format: bundleFormatSel.value,
+      theme: bundleThemeSel.value,
+      targetSelector: bundleTargetInp.value || '#app',
+      title: file.name.replace(/\.zl$/i, '')
+    });
+
+    const outName = file.name.replace(/\.zl$/i, '') + '.zl.js';
+    const blob = new Blob([bundle.js], { type: 'application/javascript;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = outName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    await new Promise(r => setTimeout(r, 120));
+  }
+
+  batchModal.classList.remove('open');
+  showToast(`Successfully converted & downloaded ${batchFiles.length} bundles!`);
+});
+
+// ── Resizable Splitter ────────────────────────────────────────────────────────
+const divider = document.getElementById('divider');
+const edPanel = document.getElementById('ed-panel');
+let isDragging = false;
+
+divider.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  divider.classList.add('dragging');
+  document.body.style.cursor = 'col-resize';
+  document.body.style.userSelect = 'none';
+});
+
+window.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+  const workspaceRect = workspaceRoot.getBoundingClientRect();
+  const offset = e.clientX - workspaceRect.left;
+  const pct = Math.max(20, Math.min(80, (offset / workspaceRect.width) * 100));
+  edPanel.style.flex = `0 0 ${pct}%`;
+});
+
+window.addEventListener('mouseup', () => {
+  if (isDragging) {
+    isDragging = false;
+    divider.classList.remove('dragging');
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  }
+});
+
+// ── Mobile View Switch ────────────────────────────────────────────────────────
+document.querySelectorAll('.view-switch button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.view-switch button').forEach(b => {
+      b.classList.remove('active', 'btn-secondary');
+      b.classList.add('btn-ghost');
+    });
+    btn.classList.add('active', 'btn-secondary');
+    btn.classList.remove('btn-ghost');
+    document.documentElement.setAttribute('data-view', btn.dataset.view);
+  });
+});
+
+// ── Toolbar Formatting Helpers ────────────────────────────────────────────────
+function wrapSel(before, after) {
+  const start = editor.selectionStart;
+  const end = editor.selectionEnd;
+  const text = editor.value;
+  const selected = text.slice(start, end) || 'text';
+  editor.value = text.slice(0, start) + before + selected + after + text.slice(end);
+  editor.focus();
+  editor.setSelectionRange(start + before.length, start + before.length + selected.length);
+  recompile();
+}
+
+function insertLineStart(prefix) {
+  const start = editor.selectionStart;
+  const text = editor.value;
+  const lineStart = text.lastIndexOf('\n', start - 1) + 1;
+  editor.value = text.slice(0, lineStart) + prefix + text.slice(lineStart);
+  editor.focus();
+  editor.setSelectionRange(start + prefix.length, start + prefix.length);
+  recompile();
+}
+
+function insertBlock(openStr, closeStr = '') {
+  const start = editor.selectionStart;
+  const text = editor.value;
+  const insertText = openStr + (closeStr ? closeStr : '');
+  editor.value = text.slice(0, start) + insertText + text.slice(start);
+  editor.focus();
+  editor.setSelectionRange(start + openStr.length, start + openStr.length);
+  recompile();
+}
+
+document.querySelectorAll('.tb[data-wrap]').forEach(b => {
+  b.addEventListener('click', () => wrapSel(b.dataset.wrap, b.dataset.wrap));
+});
+document.querySelectorAll('.tb[data-insert]').forEach(b => {
+  b.addEventListener('click', () => insertLineStart(b.dataset.insert.replace(/\\n/g, '\n')));
+});
+document.querySelectorAll('.tb[data-block]').forEach(b => {
+  b.addEventListener('click', () => insertBlock(
+    b.dataset.block.replace(/\\n/g, '\n'),
+    (b.dataset.blockClose || '').replace(/\\n/g, '\n')
+  ));
+});
+
+// ── Keyboard Shortcuts ────────────────────────────────────────────────────────
+window.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    e.preventDefault();
+    btnDownloadJs.click();
+  } else if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
+    e.preventDefault();
+    btnOpenFile.click();
+  } else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    recompile();
+    showToast('Recompiled!');
+  }
+});
+
+// ── Initial Boot ──────────────────────────────────────────────────────────────
+editor.value = SAMPLES.showcase;
+recompile();
+</script>
+</body>
+</html>
