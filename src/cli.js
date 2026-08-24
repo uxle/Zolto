@@ -18,7 +18,7 @@ export async function runCli(argv) {
   switch (command) {
     case 'help':
       console.log(`
-Zolto CLI v1.0.0
+Zolto CLI v${VERSION}
 Usage: zolto <command> [options]
 
 Commands:
@@ -41,13 +41,13 @@ Commands:
       break;
 
     case 'version':
-      console.log('Zolto v1.0.0');
+      console.log(`Zolto v${VERSION}`);
       break;
 
     case 'init': {
       const config = {
         name: path.basename(process.cwd()),
-        version: "1.0.0",
+        version: "${VERSION}",
         type: "document",
         dependencies: {}
       };
