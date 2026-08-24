@@ -11,7 +11,7 @@
     "LICENSE"
   ],
   "bin": {
-    "zolto": "./bin/zolto.js"
+    "zolto": "bin/zolto.js"
   },
   "main": "src/zolto.js",
   "exports": {
