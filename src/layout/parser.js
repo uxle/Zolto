@@ -254,7 +254,7 @@ function parseCanvasLayerContent(bodyStr) {
       const attrs = parseLayoutAttrStr(attrStr);
 
       if (['rect', 'text', 'image', 'line', 'shape', 'box'].includes(type)) {
-        let contentLines = [];
+        const contentLines = [];
         const closeTag = `@/${type}`;
         if (bodyStr.includes(closeTag)) {
           i++;

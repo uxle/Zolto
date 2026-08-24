@@ -47,7 +47,7 @@ Commands:
     case 'init': {
       const config = {
         name: path.basename(process.cwd()),
-        version: "${VERSION}",
+        version: VERSION,
         type: "document",
         dependencies: {}
       };

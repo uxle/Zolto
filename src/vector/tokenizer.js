@@ -65,7 +65,7 @@ export function tokenizeVector(sourceText) {
       if (char === '"' || char === "'") {
         const quote = char;
         let strVal = '';
-        let startCol = col;
+        const startCol = col;
         i++; col++;
         while (i < line.length && line[i] !== quote) {
           if (line[i] === '\\' && i + 1 < line.length) {

@@ -114,7 +114,7 @@ export function parseChart(bodyStr, headerStr = '') {
   }
 
   const defaultDataset = datasetNode('default');
-  let currentDataset = defaultDataset;
+  const currentDataset = defaultDataset;
   chartOpts.datasets.push(defaultDataset);
 
   // Parse body sections
