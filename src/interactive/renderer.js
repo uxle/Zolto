@@ -324,7 +324,8 @@ function renderPoll(node, opts) {
   const anon  = node.anonymous ? ' <span style="font-size:0.8rem;color:var(--zl-help-color)">(anonymous)</span>' : '';
   const question = `<div class="zl-poll-question">${esc(node.question)}${anon}</div>`;
   const submitBtn = `<button type="button" class="zl-btn zl-btn-primary" style="margin-top:0.75rem" data-zl-poll-submit>Vote</button>`;
-  return `<div class="zl-poll" data-zl-poll="${esc(node.question)}">\n  ${question}\n  <div class="zl-poll-options" role="${node.multi ? 'group' : 'radiogroup'}" aria-label="${esc(node.question)}">\n${options}\n  </div>\n  ${submitBtn}\n</div>`;
+  const results = `<div class="zl-poll-results" data-zl-poll-results hidden></div>`;
+  return `<div class="zl-poll" data-zl-poll="${esc(node.question)}">\n  ${question}\n  <div class="zl-poll-options" role="${node.multi ? 'group' : 'radiogroup'}" aria-label="${esc(node.question)}">\n${options}\n  </div>\n  ${submitBtn}\n  ${results}\n</div>`;
 }
 
 // ─── Task list ────────────────────────────────────────────────────────────────

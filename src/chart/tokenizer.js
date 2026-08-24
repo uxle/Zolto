@@ -102,7 +102,7 @@ export function tokenizeChart(sourceStr) {
       if (char === '"' || char === "'") {
         const quote = char;
         let strVal = '';
-        const startCol = col;
+        let startCol = col;
         i++; col++;
         while (i < line.length && line[i] !== quote) {
           if (line[i] === '\\' && i + 1 < line.length) {

@@ -180,6 +180,7 @@ body.exporting svg {
 
 <script type="module">
 import { compile, parse, about } from './src/zolto.js';
+import { initZoltoInteractivity } from './src/interactive/runtime.js';
 
 // ── DOM ──────────────────────────────────────────────────────────────────────
 const editor   = document.getElementById('editor');
@@ -213,6 +214,7 @@ function renderPreview() {
   const ms   = (performance.now() - t0).toFixed(1);
 
   preview.innerHTML = html;
+  initZoltoInteractivity(preview);
   charCnt.textContent = `${src.length} chars`;
   rtLabel.textContent = `${ms} ms`;
   sTime.textContent = `${ms} ms`;

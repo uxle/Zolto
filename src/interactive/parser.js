@@ -551,7 +551,7 @@ function parseDeck(p) {
   p.skipNewlines();
   p.matchBrace();
   const cards = [];
-  const deckOpts = {};
+  let deckOpts = {};
   while (!p.done()) {
     p.skipNewlines();
     const t = p.peek();

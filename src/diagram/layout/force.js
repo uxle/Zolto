@@ -53,13 +53,13 @@ export function layoutForce(graph, opts = {}) {
         const v = nodes[j].id;
         const posV = positions.get(v);
 
-        const deltaX = posU.x - posV.x;
-        const deltaY = posU.y - posV.y;
-        const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY) || 0.01;
+        let deltaX = posU.x - posV.x;
+        let deltaY = posU.y - posV.y;
+        let dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY) || 0.01;
 
-        const repForce = (k * k) / dist;
-        const fx = (deltaX / dist) * repForce;
-        const fy = (deltaY / dist) * repForce;
+        let repForce = (k * k) / dist;
+        let fx = (deltaX / dist) * repForce;
+        let fy = (deltaY / dist) * repForce;
 
         const velU = velocities.get(u);
         const velV = velocities.get(v);
@@ -74,13 +74,13 @@ export function layoutForce(graph, opts = {}) {
       const posV = positions.get(edge.to);
       if (!posU || !posV) continue;
 
-      const deltaX = posU.x - posV.x;
-      const deltaY = posU.y - posV.y;
-      const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY) || 0.01;
+      let deltaX = posU.x - posV.x;
+      let deltaY = posU.y - posV.y;
+      let dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY) || 0.01;
 
-      const attForce = (dist * dist) / k;
-      const fx = (deltaX / dist) * attForce;
-      const fy = (deltaY / dist) * attForce;
+      let attForce = (dist * dist) / k;
+      let fx = (deltaX / dist) * attForce;
+      let fy = (deltaY / dist) * attForce;
 
       const velU = velocities.get(edge.from);
       const velV = velocities.get(edge.to);
@@ -93,8 +93,8 @@ export function layoutForce(graph, opts = {}) {
       const pos = positions.get(node.id);
       const vel = velocities.get(node.id);
 
-      const dLen = Math.sqrt(vel.dx * vel.dx + vel.dy * vel.dy) || 0.01;
-      const cappedDist = Math.min(dLen, temp);
+      let dLen = Math.sqrt(vel.dx * vel.dx + vel.dy * vel.dy) || 0.01;
+      let cappedDist = Math.min(dLen, temp);
 
       pos.x += (vel.dx / dLen) * cappedDist;
       pos.y += (vel.dy / dLen) * cappedDist;

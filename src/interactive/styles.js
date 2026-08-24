@@ -488,6 +488,7 @@ export const INTERACTIVE_CSS = `
 .zl-poll-option input  { accent-color: var(--zl-accent, #6366f1); flex-shrink: 0; }
 
 .zl-poll-bar-row { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 0.4rem; }
+.zl-poll-results { margin-top: 1rem; }
 .zl-poll-bar-label { font-size: 0.875rem; display: flex; justify-content: space-between; }
 .zl-poll-bar-track {
   height: 0.5rem;

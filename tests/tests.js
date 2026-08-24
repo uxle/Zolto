@@ -24,6 +24,7 @@ import { runPhase14Tests } from './tests-p14.js';
 import { runPhase15Tests } from './tests-p15.js';
 import integrationSuite from './integration/interpolation-and-slots.test.js';
 import deepAuditSuite from './integration/deep-audit-regressions.test.js';
+import cliSuite from './integration/cli.test.js';
 import jsConverterSuite from './test-js-converter.js';
 
 export async function runAllTests() {
@@ -81,10 +82,14 @@ export async function runAllTests() {
   const jsConverterPassed = jsConverterResults.filter(r => r.pass).length;
   const jsConverterFailed = jsConverterResults.length - jsConverterPassed;
 
+  const cliResults = await cliSuite.run();
+  const cliPassed = cliResults.filter(r => r.pass).length;
+  const cliFailed = cliResults.length - cliPassed;
+
   return {
-    results: [...p2.results, ...p3.results, ...p4.results, ...p5.results, ...p6.results, ...p7Results, ...p8Results, ...p9Results, ...p10Results, ...p11Results, ...p12Results, ...p13Results, ...p14Results, ...p15Results, ...integrationResults, ...deepAuditResults, ...jsConverterResults],
-    passed:  p2.passed + p3.passed + p4.passed + p5.passed + p6.passed + p7.passed + p8.passed + p9.passed + p10.passed + p11.passed + p12.passed + p13.passed + p14.passed + p15.passed + integrationPassed + deepAuditPassed + jsConverterPassed,
-    failed:  p2.failed + p3.failed + p4.failed + p5.failed + p6.failed + p7.failed + p8.failed + p9.failed + p10.failed + p11.failed + p12.failed + p13.failed + p14.failed + p15.failed + integrationFailed + deepAuditFailed + jsConverterFailed,
-    total:   p2.total  + p3.total  + p4.total  + p5.total  + p6.total  + (p7.passed + p7.failed) + p8.total + p9.total + p10.total + p11.total + p12.total + p13.total + p14.total + p15.total + integrationResults.length + deepAuditResults.length + jsConverterResults.length,
+    results: [...p2.results, ...p3.results, ...p4.results, ...p5.results, ...p6.results, ...p7Results, ...p8Results, ...p9Results, ...p10Results, ...p11Results, ...p12Results, ...p13Results, ...p14Results, ...p15Results, ...integrationResults, ...deepAuditResults, ...jsConverterResults, ...cliResults],
+    passed:  p2.passed + p3.passed + p4.passed + p5.passed + p6.passed + p7.passed + p8.passed + p9.passed + p10.passed + p11.passed + p12.passed + p13.passed + p14.passed + p15.passed + integrationPassed + deepAuditPassed + jsConverterPassed + cliPassed,
+    failed:  p2.failed + p3.failed + p4.failed + p5.failed + p6.failed + p7.failed + p8.failed + p9.failed + p10.failed + p11.failed + p12.failed + p13.failed + p14.failed + p15.failed + integrationFailed + deepAuditFailed + jsConverterFailed + cliFailed,
+    total:   p2.total  + p3.total  + p4.total  + p5.total  + p6.total  + (p7.passed + p7.failed) + p8.total + p9.total + p10.total + p11.total + p12.total + p13.total + p14.total + p15.total + integrationResults.length + deepAuditResults.length + jsConverterResults.length + cliResults.length,
   };
 }

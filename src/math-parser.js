@@ -190,7 +190,7 @@ export class MathParser {
   }
 
   parsePostfix() {
-    const atom = this.parsePrimary();
+    let atom = this.parsePrimary();
 
     let sub = null, sup = null;
     for (;;) {

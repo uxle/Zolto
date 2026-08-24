@@ -87,7 +87,7 @@ export function slugify(text) {
 }
 
 export function uniqueSlug(text, usedSet) {
-  const base = slugify(text);
+  let base = slugify(text);
   if (!usedSet.has(base)) { usedSet.add(base); return base; }
   let n = 1;
   while (usedSet.has(`${base}-${n}`)) n++;

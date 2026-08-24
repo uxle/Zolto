@@ -100,7 +100,7 @@ export function tokenizeDiagram(sourceStr) {
       if (char === '"' || char === "'") {
         const quote = char;
         let strVal = '';
-        const startCol = col;
+        let startCol = col;
         i++; // skip quote
         col++;
         while (i < line.length && line[i] !== quote) {

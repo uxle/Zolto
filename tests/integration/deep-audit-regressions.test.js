@@ -16,6 +16,8 @@ import { parseComponent, renderComponent } from '../../src/zolto.js';
 import { parseInteractive, renderInteractive } from '../../src/interactive/index.js';
 import { parseInteractiveSource } from '../../src/interactive/parser.js';
 import { ZOLTO_RUNTIME_JS } from '../../src/export/js-bundle-export.js';
+import { initZoltoInteractivity } from '../../src/interactive/runtime.js';
+import { readFileSync } from 'fs';
 
 const suite = createSuite('Security & Deep Audit Regressions');
 
@@ -201,6 +203,68 @@ suite.test('BUG: exported quiz runtime queried selectors the renderer never prod
   assert(ZOLTO_RUNTIME_JS.includes('data-zl-quiz-score'), 'runtime must query the selector the renderer actually emits for the score element');
   assert(ZOLTO_RUNTIME_JS.includes('data-zl-correct'), 'runtime must read correctness off data-zl-correct, matching the renderer');
   assert(!ZOLTO_RUNTIME_JS.includes('zl-quiz-opt'), 'runtime must not reference the never-emitted .zl-quiz-opt class');
+});
+
+suite.test('BUG: exported flashcard-deck runtime queried classes the renderer never produces (nav did nothing)', () => {
+  // Old runtime looked for .zl-flashcard-deck/.zl-flashcard/.zl-fc-prev/
+  // .zl-fc-next/.zl-fc-counter and assumed every card was its own DOM
+  // element. The real renderer (renderDeck) only ever puts ONE card
+  // element in the DOM (.zl-deck > [data-zl-card]) and embeds the rest
+  // as JSON in a <script data-zl-deck-data> tag — so even a correctly
+  // selectored runtime that assumed one-DOM-element-per-card couldn't
+  // have worked. Assert the real classes exist and the runtime parses
+  // the JSON payload it needs to navigate at all.
+  const { nodes } = parseInteractive('@deck "Capitals" {\n@card\nfront "France"\nback "Paris"\n@end\n@card\nfront "Japan"\nback "Tokyo"\n@end\n}');
+  const html = renderInteractive(nodes);
+  assert(html.includes('data-zl-deck-data'), 'renderer must embed the full card list as JSON for the runtime to read');
+  assert(html.includes('data-zl-deck-prev') && html.includes('data-zl-deck-next'), 'renderer must emit the real nav button selectors');
+  assert(html.includes('data-zl-deck-counter'), 'renderer must emit the real counter selector');
+
+  assert(ZOLTO_RUNTIME_JS.includes('data-zl-deck-data'), 'runtime must read the embedded card JSON, not assume one element per card');
+  assert(ZOLTO_RUNTIME_JS.includes('data-zl-deck-prev') && ZOLTO_RUNTIME_JS.includes('data-zl-deck-next'), 'runtime must query the selectors the renderer actually emits');
+  assert(!ZOLTO_RUNTIME_JS.includes("querySelectorAll('.zl-flashcard-deck") && !ZOLTO_RUNTIME_JS.includes("querySelector('.zl-fc-prev"), 'runtime must not query the never-emitted .zl-flashcard-deck/.zl-fc-* classes');
+});
+
+suite.test('BUG: @itabs had zero interactivity anywhere; the exported runtime\'s "tabs" handler matched a different feature and fought its own working handler', () => {
+  // .zl-tabs/.zl-tab-btn (the @tabs *directive*) already ships a
+  // self-contained inline onclick handler that toggles panels via the
+  // `hidden` attribute. The old runtime section also matched those same
+  // class names and toggled `style.display`/`.active` instead — a second,
+  // uncoordinated mechanism on the same elements — while the actually-
+  // unwired feature, @itabs (.zl-itabs/.zl-itab-btn/.zl-itab-panel), was
+  // never targeted by anything at all.
+  assert(!ZOLTO_RUNTIME_JS.includes("querySelectorAll('.zl-tab-btn") && !ZOLTO_RUNTIME_JS.includes("querySelectorAll('.zl-tab-panel"), 'runtime must not duplicate the @tabs directive\'s own inline handler');
+  assert(ZOLTO_RUNTIME_JS.includes('zl-itab-btn') && ZOLTO_RUNTIME_JS.includes('zl-itab-panel'), 'runtime must wire up the @itabs feature that actually has no handler of its own');
+});
+
+suite.test('BUG: poll "Vote" button was entirely unimplemented in the exported runtime', () => {
+  const { nodes } = parseInteractive('@poll "Best editor?" {\nZolto\nOther\n}');
+  const html = renderInteractive(nodes);
+  assert(html.includes('data-zl-poll-submit'), 'renderer must emit a submit trigger');
+  assert(html.includes('data-zl-poll-results'), 'renderer must emit a place to show results after voting');
+  assert(ZOLTO_RUNTIME_JS.includes('data-zl-poll-submit'), 'runtime must actually wire up the vote button');
+  assert(ZOLTO_RUNTIME_JS.includes('data-zl-poll-results'), 'runtime must populate the results container the renderer provides');
+});
+
+suite.test('BUG: quiz/flashcard/poll/@itabs interactivity only worked in the standalone export tool, never in the live editor app', () => {
+  // index.html rendered preview.innerHTML = compile(src) and never called
+  // any interactivity runtime at all — the runtime only existed embedded
+  // inside src/export/js-bundle-export.js's exported bundles. Every
+  // interactive feature was inert in the primary product surface. Assert
+  // the live app now imports and invokes the same canonical runtime used
+  // by exports.
+  const html = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
+  assert(html.includes("from './src/interactive/runtime.js'"), 'index.html must import the canonical interactivity runtime');
+  assert(html.includes('initZoltoInteractivity(preview)'), 'index.html must actually invoke it on the rendered preview');
+});
+
+suite.test('BUG: the export runtime was a hand-duplicated copy of the live-app runtime, free to drift out of sync', () => {
+  // This is the root cause behind several bugs found and fixed in this
+  // audit (quiz/flashcard/tabs selector mismatches): two independently
+  // maintained copies of "the interactivity runtime" existed. Now
+  // ZOLTO_RUNTIME_JS must be *derived* from the one real, importable,
+  // testable function via Function.prototype.toString(), not restated.
+  eq(ZOLTO_RUNTIME_JS, initZoltoInteractivity.toString(), 'the exported runtime string must be produced from the canonical function, not a separate hand-written copy');
 });
 
 export default suite;
