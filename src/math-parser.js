@@ -23,7 +23,7 @@ import { tokenizeMath, MT } from './math-tokenizer.js';
 import * as A from './math-ast.js';
 import {
   lookupSymbol, FUNCTION_NAMES, LIMIT_FUNCTIONS,
-  DELIM_CHARS, MATRIX_ENVIRONMENTS, MATRIX_DELIMS, SET_SYMBOLS,
+  DELIM_CHARS, MATRIX_ENVIRONMENTS, MATRIX_DELIMS, SET_SYMBOLS, MATHCAL,
 } from './math-symbols.js';
 import { installMatrixMethods } from './math-matrix.js';
 
@@ -374,6 +374,14 @@ export class MathParser {
         const ch = inner.type === 'Identifier' ? SET_SYMBOLS.mathbb[inner.name] : null;
         return ch ? A.mBlackboard(ch) : A.mBold(inner); // fallback: bold for unmapped letters
       }
+
+      case 'mathcal': case 'cal': {
+        const inner = this.parseGroup();
+        const ch = inner.type === 'Identifier' ? MATHCAL[inner.name] : null;
+        return ch ? A.mScript(ch) : A.mBold(inner); // fallback: bold for unmapped letters
+      }
+
+      case 'mid': return A.mSymbol('mid', '\u2223', 'rel');
 
       case 'text': case 'mathrm': case 'operatorname': {
         // Tokenizer already captured LBRACE TEXT RBRACE verbatim for these.

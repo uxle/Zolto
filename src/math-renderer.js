@@ -87,6 +87,7 @@ export const MATH_CSS = `
 
 .zl-bold{font-weight:700}
 .zl-blackboard{font-family:'STIX Two Math','Cambria Math',serif}
+.zl-script{font-family:'STIX Two Math','Cambria Math',serif;font-style:italic}
 
 .zl-eqgroup{display:inline-grid;gap:.4em 0;vertical-align:middle}
 .zl-eqgroup-row{display:flex;align-items:center;gap:.3em}
@@ -181,6 +182,7 @@ function render(n) {
     case 'Accent':            return renderAccent(n);
     case 'Bold':              return `<span class="zl-bold">${render(n.children[0])}</span>`;
     case 'Blackboard':      return `<span class="zl-blackboard">${esc(n.char)}</span>`;
+    case 'Script':          return `<span class="zl-script">${esc(n.char)}</span>`;
     default:                  return '';
   }
 }
@@ -317,6 +319,7 @@ function toText(n) {
     case 'Accent': return toText(n.children[0]);
     case 'Bold': return toText(n.children[0]);
     case 'Blackboard': return n.char;
+    case 'Script': return n.char;
     case 'MathError': return '';
     default: return '';
   }

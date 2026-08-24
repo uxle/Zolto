@@ -94,6 +94,19 @@ export const SET_SYMBOLS = Object.freeze({
   },
 });
 
+// Calligraphic / script capitals (\mathcal{...}). Uses the dedicated
+// Letterlike Symbols codepoints where Unicode defines one (B, E, F, H, I,
+// L, M, R), and the Mathematical Script block otherwise.
+export const MATHCAL = Object.freeze({
+  A:'\u{1D49C}', B:'\u212C',    C:'\u{1D49E}', D:'\u{1D49F}',
+  E:'\u2130',    F:'\u2131',    G:'\u{1D4A2}', H:'\u210B',
+  I:'\u2110',    J:'\u{1D4A5}', K:'\u{1D4A6}', L:'\u2112',
+  M:'\u2133',    N:'\u{1D4A9}', O:'\u{1D4AA}', P:'\u{1D4AB}',
+  Q:'\u{1D4AC}', R:'\u211B',    S:'\u{1D4AE}', T:'\u{1D4AF}',
+  U:'\u{1D4B0}', V:'\u{1D4B1}', W:'\u{1D4B2}', X:'\u{1D4B3}',
+  Y:'\u{1D4B4}', Z:'\u{1D4B5}',
+});
+
 // ─── Geometry & misc ───────────────────────────────────────────────────────────
 
 export const MISC = Object.freeze({

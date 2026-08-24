@@ -10,7 +10,7 @@ let total = 0;
 for (const f of readdirSync(src).sort()) {
   const sz = statSync(join(src, f)).size;
   total += sz;
-  console.log(\`  \${(sz/1024).toFixed(1).padStart(6)} KB  \${f}\`);
+  console.log(`  ${(sz/1024).toFixed(1).padStart(6)} KB  ${f}`);
 }
-console.log(\`  \${'─'.repeat(28)}\`);
-console.log(\`  \${(total/1024).toFixed(1).padStart(6)} KB  total (src/ only)\`);
+console.log(`  ${'─'.repeat(28)}`);
+console.log(`  ${(total/1024).toFixed(1).padStart(6)} KB  total (src/ only)`);

@@ -51,6 +51,7 @@ function createParser(tokens) {
     if (t.type === TK.MOD_SEARCHABLE) mods.searchable = true;
     if (t.type === TK.MOD_ANONYMOUS)  mods.anonymous = true;
     if (t.type === TK.MOD_SHUFFLE)    mods.shuffle = true;
+    if (t.type === TK.MOD_CASESENSITIVE) mods.caseSensitive = true;
   }
 
   function applyProp(props, t) {
@@ -74,14 +75,14 @@ function createParser(tokens) {
 
   function collectModsProps() {
     const mods = { required: false, disabled: false, loading: false, multi: false,
-                   searchable: false, anonymous: false, shuffle: false };
+                   searchable: false, anonymous: false, shuffle: false, caseSensitive: false };
     const props = {};
     while (!done()) {
       skipNewlines();
       const t = peek();
       if (t.type === TK.EOF || t.type === TK.CLOSE_BRACE) break;
       const isMod = [TK.MOD_REQUIRED, TK.MOD_DISABLED, TK.MOD_LOADING, TK.MOD_MULTI,
-                     TK.MOD_SEARCHABLE, TK.MOD_ANONYMOUS, TK.MOD_SHUFFLE].includes(t.type);
+                     TK.MOD_SEARCHABLE, TK.MOD_ANONYMOUS, TK.MOD_SHUFFLE, TK.MOD_CASESENSITIVE].includes(t.type);
       const isProp = [TK.PROP_LABEL, TK.PROP_PLACEHOLDER, TK.PROP_VALUE, TK.PROP_MIN,
                       TK.PROP_MAX, TK.PROP_STEP, TK.PROP_ROWS, TK.PROP_HELP, TK.PROP_ERROR,
                       TK.PROP_ANSWER, TK.PROP_DIFFICULTY, TK.PROP_TAGS, TK.PROP_FRONT,
@@ -438,19 +439,49 @@ function parseMCQ(p, multi) {
   return node;
 }
 
+// @hint / @explain don't have a PROP_* token — they're only ever the
+// KW_HINT/KW_EXPLAIN directive tokens (see parseMCQ). For single-line
+// question types (true/false, fill-blank) that don't use a `{ }` block,
+// collectModsProps() can't see them, so pull any that immediately follow
+// off the stream here and attach them to this question — otherwise they
+// fall through to the top-level dispatcher and get parsed as bogus
+// standalone "hint"/"explain" nodes, which quizScore() then silently
+// counts as extra always-wrong questions.
+function consumeTrailingHintExplain(p) {
+  const out = {};
+  p.skipNewlines();
+  while (!p.done()) {
+    const t = p.peek();
+    if (t.type === TK.KW_HINT)         out.hint    = parseHintExplain(p, 'hint').text;
+    else if (t.type === TK.KW_EXPLAIN) out.explain = parseHintExplain(p, 'explain').text;
+    else break;
+    p.skipNewlines();
+  }
+  return out;
+}
+
 function parseTrueFalse(p) {
   const tok = p.advance();
   const question = stripQuotes((tok.value || '').trim());
   const { props } = p.collectModsProps();
+  const trailing = consumeTrailingHintExplain(p);
   const answer = props.answer === 'true' || props.answer === true;
-  return createTrueFalseNode(question, answer, { hint: props.hint || null, explain: props.explain || null });
+  return createTrueFalseNode(question, answer, {
+    hint: trailing.hint || props.hint || null,
+    explain: trailing.explain || props.explain || null,
+  });
 }
 
 function parseFillBlank(p) {
   const tok = p.advance();
   const question = stripQuotes((tok.value || '').trim());
-  const { props } = p.collectModsProps();
-  return createFillBlankNode(question, props.answer || '', { hint: props.hint || null });
+  const { props, mods } = p.collectModsProps();
+  const trailing = consumeTrailingHintExplain(p);
+  return createFillBlankNode(question, props.answer || '', {
+    hint: trailing.hint || props.hint || null,
+    explain: trailing.explain || props.explain || null,
+    caseSensitive: Boolean(mods.caseSensitive),
+  });
 }
 
 function parseMatching(p) {
@@ -491,7 +522,7 @@ function parseMatrix(p) {
 
 function parseHintExplain(p, kind) {
   const tok = p.advance();
-  let text = (tok.value || '').trim();
+  let text = stripQuotes((tok.value || '').trim());
   if (!text) {
     const STOPS = new Set([TK.CLOSE_BRACE, TK.KW_EXPLAIN, TK.KW_HINT, TK.EOF]);
     const lines = [];
@@ -504,7 +535,7 @@ function parseHintExplain(p, kind) {
       p.advance();
     }
     if (p.peek().type === TK.CLOSE_BRACE) p.advance();
-    text = lines.join(' ').trim();
+    text = stripQuotes(lines.join(' ').trim());
   }
   return kind === 'hint' ? createHintNode(text) : createExplainNode(text);
 }

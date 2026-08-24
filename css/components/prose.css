@@ -35,7 +35,7 @@
 
 /* Callouts / Admonitions */
 .prose .zl-callout { border-left: 3px solid var(--primary); background: var(--primary-soft); border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: var(--space-2) var(--space-3); margin: 1.5em 0; }
-.prose .zl-callout-title { font-weight: 600; color: var(--primary); margin-bottom: 0.2em; display: flex; align-items: center; gap: 8px; }
+.prose .zl-callout-title { font-weight: 600; color: var(--primary); margin-bottom: 0.2em; display: flex; align-items: center; gap: var(--space-1); }
 .prose .zl-callout-body { color: var(--text-secondary); font-size: 0.95em; }
 .prose .zl-callout-tip { border-left-color: var(--accent-green); background: rgba(94, 226, 154, 0.05); }
 .prose .zl-callout-tip .zl-callout-title { color: var(--accent-green); }
@@ -53,7 +53,7 @@
 .prose .zl-admonition-danger .zl-admonition-header { background: rgba(242, 139, 130, 0.1); color: var(--accent-red); }
 
 /* Badges */
-.lx-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: var(--radius-pill); font-size: 0.65rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+.lx-badge { display: inline-flex; align-items: center; gap: var(--space-xs); padding: var(--space-2xs) var(--space-1); border-radius: var(--radius-pill); font-size: 0.65rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
 .lx-badge-blue { background: var(--primary-soft); color: var(--primary); }
 .lx-badge-green { background: rgba(94, 226, 154, 0.1); color: var(--accent-green); }
 

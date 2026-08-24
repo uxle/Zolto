@@ -158,6 +158,9 @@ export function mBold(inner) { return { type: 'Bold', children: [inner] }; }
 /** `\mathbb{R}` — blackboard-bold set symbol (ℝ, ℕ, ℤ, ℚ, ℂ, …). */
 export function mBlackboard(char = '') { return { type: 'Blackboard', char }; }
 
+/** `\mathcal{L}` — calligraphic/script capital letter (𝓛, ℒ, …). */
+export function mScript(char = '') { return { type: 'Script', char }; }
+
 // ─── Top-level equation wrappers ───────────────────────────────────────────────
 // Attached to the main document's MathBlock/MathInline nodes by parser.js.
 
@@ -179,6 +182,6 @@ export const MATH_NODE_TYPES = new Set([
   'UnaryExpression','BinaryExpression','Sequence',
   'Fraction','Root','Power','Subscript','SubSup','Delim','Over','Under',
   'Summation','Product','Integral','Limit','FunctionCall',
-  'Row','Cell','Matrix','Vector','Accent','Bold','Blackboard',
+  'Row','Cell','Matrix','Vector','Accent','Bold','Blackboard','Script',
   'Equation','EquationGroup',
 ]);

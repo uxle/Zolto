@@ -32,7 +32,7 @@
   font-size: 0.65rem; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-pill);
   background: var(--primary-soft); color: var(--primary); letter-spacing: 0.05em; text-transform: uppercase;
 }
-.view-switch { display: none; align-items: center; gap: 4px; padding: 4px; background: var(--bg-surface-raised); border-radius: var(--radius-pill); }
+.view-switch { display: none; align-items: center; gap: var(--space-xs); padding: var(--space-xs); background: var(--bg-surface-raised); border-radius: var(--radius-pill); }
 .controls { display: flex; align-items: center; gap: var(--space-1); }
 
 /* EDITOR PANEL */
@@ -133,8 +133,7 @@
   .ed-panel { flex: 1; border-right: none; }
   html[data-view="preview"] .ed-panel, html[data-view="preview"] .divider { display: none; }
   html[data-view="edit"] .canvas, html[data-view="edit"] .divider { display: none; }
-  .view-switch .btn span { display: none; }
-  .btn:not(.btn-icon) span { display: none; }
+  .btn:not(.btn-icon) span { display: none; } /* also covers .view-switch .btn span */
   .btn:not(.btn-icon) { width: 40px; padding: 0; }
   .lx-modal-box { max-width: 90vw; }
 }
@@ -143,9 +142,9 @@
 @media (max-width: 320px) {
   .hdr { padding: 0 var(--space-1); gap: var(--space-1); }
   .brand-name { display: none; }
-  .view-switch .btn { padding: 4px 8px; font-size: 0.7rem; width: auto; height: 32px; }
+  .view-switch .btn { padding: var(--space-xs) var(--space-1); font-size: 0.7rem; width: auto; height: 32px; }
   .view-switch .btn i { font-size: 14px; }
-  .toolbar { flex-wrap: nowrap; overflow-x: scroll; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+  .toolbar { flex-wrap: nowrap; overflow-x: scroll; -webkit-overflow-scrolling: touch; padding-bottom: var(--space-xs); }
   .btn-icon { width: 36px; height: 36px; }
   .btn { width: auto; padding: 0 8px; }
   .card.spotlight { padding: var(--space-3) var(--space-2); border-radius: var(--radius-md); }

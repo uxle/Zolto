@@ -58,6 +58,7 @@ export const TK = Object.freeze({
   MOD_SEARCHABLE:  'mod_searchable',
   MOD_ANONYMOUS:   'mod_anonymous',
   MOD_SHUFFLE:     'mod_shuffle',
+  MOD_CASESENSITIVE: 'mod_casesensitive',
   // Property keywords (take a value argument)
   PROP_LABEL:      'prop_label',
   PROP_PLACEHOLDER:'prop_placeholder',
@@ -236,10 +237,10 @@ export function tokenizeInteractive(src) {
     }
 
     // Modifier keyword on its own line
-    const modM = /^(required|disabled|loading|multi|searchable|anonymous|shuffle)$/i.exec(line);
+    const modM = /^(required|disabled|loading|multi|searchable|anonymous|shuffle|casesensitive)$/i.exec(line);
     if (modM) {
       const modKey = modM[1].toLowerCase();
-      tokens.push({ type: KEYWORD_MAP[modKey] || TK.IDENT, value: modKey, line: lineNum });
+      tokens.push({ type: modKey === 'casesensitive' ? TK.MOD_CASESENSITIVE : (KEYWORD_MAP[modKey] || TK.IDENT), value: modKey, line: lineNum });
       continue;
     }
 

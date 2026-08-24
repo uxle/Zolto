@@ -1,8 +1,15 @@
 {
   "name": "zolto",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Zolto v1.0 Stable — Extended Markdown document engine ecosystem.",
   "type": "module",
+  "files": [
+    "src",
+    "bin",
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "bin": {
     "zolto": "./bin/zolto.js"
   },
@@ -34,9 +41,9 @@
     "test": "node tests/run-all.js",
     "lint": "npx eslint src/ tests/ --ext .js",
     "format": "npx prettier --write src/ tests/ *.md",
-    "build": "echo 'No build step required — ES modules run natively'",
+    "build": "node scripts/build-dist.mjs",
     "build:bin": "npx pkg .",
-    "check": "find src tests -name \"*.js\" -exec node --check {} +"
+    "check": "find src tests scripts bin -name \"*.js\" -o -name \"*.mjs\" | xargs -I{} node --check {}"
   },
   "pkg": {
     "scripts": "src/**/*.js",
@@ -76,9 +83,13 @@
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "esbuild": "^0.28.1",
     "eslint": "^10.8.0",
     "pkg": "^5.8.1",
     "prettier": "^3.9.6",
     "serve": "^14.0.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true
   }
 }

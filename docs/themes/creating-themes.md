@@ -1,39 +1,61 @@
 # Creating Themes
 
-A Zolto theme is a CSS file that overrides design tokens for a named `data-theme` attribute.
+Zolto themes are created and registered through the Phase 15
+**Theme Engine** (`src/theme/`), not as hand-authored CSS files. The
+old `css/themes/*.css` file-per-theme pattern documented here
+previously was never wired up (no `data-theme` attribute was ever set
+on anything, and the files weren't loaded by `index.html`) and has
+been removed along with the rest of that dead tree.
 
-## Template
+## Defining a theme
 
-```css
-/* css/themes/my-theme.css */
-[data-theme="my-theme"] {
-  /* Backgrounds */
-  --bg-base:  #1a1a2e;
-  --bg-app:   #16213e;
-  --bg-panel: #0f3460;
+A theme is a `Theme` AST node — build one with `createTheme(name, mode,
+tokens)` from `src/theme/ast.js`, where `tokens` is a flat object keyed
+by the constants in `TOKEN_KEYS` (`src/theme/tokens.js`, `--zl-*`
+namespace: backgrounds, text, borders, spacing, radius, shadows,
+motion):
 
-  /* Text */
-  --text-main: #e0e0e0;
-  --text-body: #a8a8b3;
-  --text-mute: #6b6b7a;
+```js
+import { ThemeEngine } from './src/theme/index.js';
+import { createTheme } from './src/theme/ast.js';
+import { TOKEN_KEYS } from './src/theme/tokens.js';
 
-  /* Brand */
-  --brand-a: #e94560;
-  --brand-b: #f5a623;
+const engine = new ThemeEngine(); // light/dark/eyeprotection pre-registered
 
-  /* Prose */
-  --prose-bg:   #16213e;
-  --prose-text: #c0c0c0;
-  --prose-head: #e0e0e0;
-}
+engine.registerTheme(createTheme('midnight', 'dark', {
+  [TOKEN_KEYS.BG_CANVAS]:    '#0d0f14',
+  [TOKEN_KEYS.BG_SURFACE]:   '#171a21',
+  [TOKEN_KEYS.TEXT_PRIMARY]: '#e6e8ec',
+  // ...remaining TOKEN_KEYS
+}));
 ```
 
-## Registering the theme
+## Validating accessibility
 
-1. Add the CSS file to `css/themes/`
-2. Add a `<link>` in `index.html`
-3. Add the name to the `THEMES` array in the Studio script
+Run new themes through `ThemeAccessibility` before shipping them —
+`isWcagAaa` checks a foreground/background pair against the WCAG AAA
+contrast threshold:
 
-## Phase 5
+```js
+import { ThemeAccessibility } from './src/theme/index.js';
 
-Theme registration will be automated via a theme registry API.
+const a11y = new ThemeAccessibility();
+const theme = engine.getTheme('midnight');
+const ok = a11y.isWcagAaa(theme.tokens[TOKEN_KEYS.TEXT_PRIMARY], theme.tokens[TOKEN_KEYS.BG_CANVAS]);
+```
+
+## Applying and switching at runtime
+
+```js
+import { ThemeSwitcher } from './src/theme/index.js';
+
+const switcher = new ThemeSwitcher(engine);
+const { css, activeName } = switcher.switchTheme('midnight');
+document.querySelector('#zl-theme-vars').textContent = css; // injects --zl-* custom properties live, no reload
+```
+
+## Packaging for distribution
+
+Use `ThemePackageBuilder.buildPackage(name, version, themes, metadata)`
+to bundle one or more themes into a portable `.zltheme` package that
+other Zolto installs can import.

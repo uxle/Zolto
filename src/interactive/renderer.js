@@ -241,16 +241,24 @@ function renderQuiz(node, opts) {
   return `<form class="zl-quiz" id="${esc(id)}" data-zl-quiz="${esc(node.title)}" novalidate>\n  ${title}\n  ${timer}\n  ${questions}\n  <div style="margin-top:1rem">${submitBtn}</div>\n  ${scoreDiv}\n</form>`;
 }
 
+function renderExplainBlock(explain) {
+  // Rationale is rendered up front but kept hidden until the runtime reveals
+  // it post-grading — showing it unconditionally would give the answer away.
+  if (!explain) return '';
+  return `<div class="zl-quiz-explain" aria-label="Explanation" role="note" data-zl-explain hidden><span class="zl-quiz-explain-label">Explanation</span> ${esc(explain)}</div>`;
+}
+
 function renderMCQ(node, opts) {
   const multi = node.multi || node.type === 'multi_choice';
   const inputType = multi ? 'checkbox' : 'radio';
   const groupName = uid('mcq', node.question);
   const options = (node.options || []).map((opt, i) => {
     const id = `${groupName}-opt-${i}`;
-    return `<label class="zl-option" for="${esc(id)}">\n  <input type="${inputType}" id="${esc(id)}" name="${esc(groupName)}" value="${i}" data-zl-correct="${opt.correct}">\n  <span>${esc(opt.text)}</span>\n</label>`;
+    const optExplain = opt.explain ? ` data-zl-opt-explain="${esc(opt.explain)}"` : '';
+    return `<label class="zl-option" for="${esc(id)}"${optExplain}>\n  <input type="${inputType}" id="${esc(id)}" name="${esc(groupName)}" value="${i}" data-zl-correct="${opt.correct}">\n  <span>${esc(opt.text)}</span>\n  <span class="zl-opt-explain" data-zl-opt-explain-text hidden></span>\n</label>`;
   }).join('\n');
-  const hint    = node.hint    ? `<div class="zl-quiz-hint" aria-label="Hint"    role="note">💡 ${esc(node.hint)}</div>` : '';
-  const explain = node.explain ? `<div class="zl-quiz-explain" aria-label="Explanation" role="note">✅ ${esc(node.explain)}</div>` : '';
+  const hint    = node.hint ? `<div class="zl-quiz-hint" aria-label="Hint" role="note">💡 ${esc(node.hint)}</div>` : '';
+  const explain = renderExplainBlock(node.explain);
   return `<div class="zl-question" role="group" aria-labelledby="${esc(groupName)}-lbl" data-zl-question="${inputType}">\n  <div class="zl-question-text" id="${esc(groupName)}-lbl">${esc(node.question)}</div>\n  <div class="zl-options">${options}</div>\n  ${hint}${explain}\n</div>`;
 }
 
@@ -259,13 +267,16 @@ function renderTrueFalse(node, opts) {
   const trueId  = `${groupName}-true`;
   const falseId = `${groupName}-false`;
   const hint    = node.hint ? `<div class="zl-quiz-hint" role="note">💡 ${esc(node.hint)}</div>` : '';
-  return `<div class="zl-question" role="group" aria-labelledby="${esc(groupName)}-lbl" data-zl-question="truefalse">\n  <div class="zl-question-text" id="${esc(groupName)}-lbl">${esc(node.question)}</div>\n  <div class="zl-options">\n    <label class="zl-option" for="${esc(trueId)}"><input type="radio" id="${esc(trueId)}" name="${esc(groupName)}" value="true" data-zl-correct="${node.answer === true}"> <span>True</span></label>\n    <label class="zl-option" for="${esc(falseId)}"><input type="radio" id="${esc(falseId)}" name="${esc(groupName)}" value="false" data-zl-correct="${node.answer === false}"> <span>False</span></label>\n  </div>\n  ${hint}\n</div>`;
+  const explain = renderExplainBlock(node.explain);
+  return `<div class="zl-question" role="group" aria-labelledby="${esc(groupName)}-lbl" data-zl-question="truefalse">\n  <div class="zl-question-text" id="${esc(groupName)}-lbl">${esc(node.question)}</div>\n  <div class="zl-options">\n    <label class="zl-option" for="${esc(trueId)}"><input type="radio" id="${esc(trueId)}" name="${esc(groupName)}" value="true" data-zl-correct="${node.answer === true}"> <span>True</span></label>\n    <label class="zl-option" for="${esc(falseId)}"><input type="radio" id="${esc(falseId)}" name="${esc(groupName)}" value="false" data-zl-correct="${node.answer === false}"> <span>False</span></label>\n  </div>\n  ${hint}${explain}\n</div>`;
 }
 
 function renderFillBlank(node, opts) {
   const id = uid('blank', node.question);
   const hint = node.hint ? `<div class="zl-quiz-hint" role="note">💡 ${esc(node.hint)}</div>` : '';
-  return `<div class="zl-question" data-zl-question="fillblank" data-zl-answer="${esc(node.answer)}">\n  <div class="zl-question-text">${esc(node.question)}</div>\n  <input type="text" id="${esc(id)}" class="zl-input" placeholder="Your answer…" aria-label="${esc(node.question)}" data-zl-blank>\n  ${hint}\n</div>`;
+  const explain = renderExplainBlock(node.explain);
+  const caseAttr = node.caseSensitive ? ' data-zl-case-sensitive' : '';
+  return `<div class="zl-question" data-zl-question="fillblank" data-zl-answer="${esc(node.answer)}"${caseAttr}>\n  <div class="zl-question-text">${esc(node.question)}</div>\n  <input type="text" id="${esc(id)}" class="zl-input" placeholder="Your answer…" aria-label="${esc(node.question)}" data-zl-blank>\n  ${hint}${explain}\n</div>`;
 }
 
 function renderMatching(node, opts) {

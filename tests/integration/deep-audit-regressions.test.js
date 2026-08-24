@@ -13,6 +13,9 @@ import { ComponentRegistry } from '../../src/component/registry.js';
 import { renderComponentNode } from '../../src/component/renderer.js';
 import { expandMacro } from '../../src/component/macros.js';
 import { parseComponent, renderComponent } from '../../src/zolto.js';
+import { parseInteractive, renderInteractive } from '../../src/interactive/index.js';
+import { parseInteractiveSource } from '../../src/interactive/parser.js';
+import { ZOLTO_RUNTIME_JS } from '../../src/export/js-bundle-export.js';
 
 const suite = createSuite('Security & Deep Audit Regressions');
 
@@ -136,6 +139,68 @@ end
   const { nodes } = parseComponent(src, { registry });
   eq(nodes.length, 2, 'the component definition and its usage must parse as two separate nodes');
   eq(nodes[1].type, 'component_use');
+});
+
+suite.test('BUG: @hint/@explain following @truefalse or @blank parsed as phantom quiz questions', () => {
+  // Because @hint/@explain only tokenize as KW_HINT/KW_EXPLAIN (no PROP_*
+  // form), and collectModsProps() only recognizes PROP_* tokens, a
+  // trailing @hint/@explain after a single-line question type used to
+  // fall through to the top-level dispatcher and get parsed as a
+  // standalone "hint"/"explain" node — silently added to the quiz's
+  // questions array, where quizScore() would count it as an extra,
+  // always-unanswerable question and deflate the real score.
+  const nodes = parseInteractiveSource(
+    '@quiz "Q" {\n@truefalse "Earth is round"\nanswer true\n@hint "Think globally"\n@explain "Oblate spheroid"\n}'
+  );
+  eq(nodes[0].questions.length, 1, 'the hint/explain must attach to the true/false question, not become extra questions');
+  eq(nodes[0].questions[0].hint, 'Think globally');
+  eq(nodes[0].questions[0].explain, 'Oblate spheroid');
+});
+
+suite.test('BUG: @hint/@explain text kept literal surrounding quote characters', () => {
+  // parseHintExplain() never called stripQuotes() on the captured text,
+  // so every hint/explanation rendered with literal " marks baked in.
+  const nodes = parseInteractiveSource(
+    '@quiz "Q" {\n@mcq "Pick" {\n@correct "A"\n@choice "B"\n@hint "Think hard"\n@explain "A is correct"\n}\n}'
+  );
+  const mcq = nodes[0].questions[0];
+  eq(mcq.hint, 'Think hard');
+  eq(mcq.explain, 'A is correct');
+});
+
+suite.test('BUG: fill-blank @explain and casesensitive modifier were parsed but silently discarded', () => {
+  const nodes = parseInteractiveSource(
+    '@quiz "Q" {\n@blank "Capital of Japan"\nanswer "Tokyo"\ncasesensitive\n@explain "Capital since 1868"\n}'
+  );
+  const blank = nodes[0].questions[0];
+  eq(blank.caseSensitive, true, 'casesensitive modifier must reach the AST node');
+  eq(blank.explain, 'Capital since 1868');
+});
+
+suite.test('BUG: quiz rationale rendered unconditionally, revealing the answer before grading', () => {
+  const { nodes } = parseInteractive('@quiz "Q" {\n@mcq "Pick" {\n@correct "A"\n@choice "B"\n@explain "Because A"\n}\n}');
+  const html = renderInteractive(nodes);
+  assert(html.includes('data-zl-explain'), 'explanation block must be marked for runtime-controlled reveal');
+  assert(/data-zl-explain\s+hidden/.test(html), 'explanation must be hidden by default, not shown immediately');
+});
+
+suite.test('BUG: exported quiz runtime queried selectors the renderer never produces (Check Answers did nothing)', () => {
+  // The embedded ZOLTO_RUNTIME_JS quiz handler looked for .zl-quiz-opt,
+  // [data-quiz-submit] and .zl-quiz-feedback — none of which
+  // src/interactive/renderer.js ever emits (.zl-option,
+  // data-zl-quiz-submit, .zl-quiz-score). Clicking "Check Answers" on
+  // any compiled/exported quiz was a silent no-op. Assert the runtime's
+  // selectors now agree with what the renderer actually outputs.
+  const { nodes } = parseInteractive('@quiz "Q" {\n@mcq "Pick" {\n@correct "A"\n@choice "B"\n}\n}');
+  const html = renderInteractive(nodes);
+  assert(html.includes('data-zl-quiz-submit'), 'renderer must emit a submit trigger the runtime can find');
+  assert(html.includes('data-zl-quiz-score'), 'renderer must emit a score target the runtime can find');
+  assert(html.includes('data-zl-correct'), 'renderer must mark correctness on each option input');
+
+  assert(ZOLTO_RUNTIME_JS.includes('data-zl-quiz-submit'), 'runtime must query the selector the renderer actually emits for the submit button');
+  assert(ZOLTO_RUNTIME_JS.includes('data-zl-quiz-score'), 'runtime must query the selector the renderer actually emits for the score element');
+  assert(ZOLTO_RUNTIME_JS.includes('data-zl-correct'), 'runtime must read correctness off data-zl-correct, matching the renderer');
+  assert(!ZOLTO_RUNTIME_JS.includes('zl-quiz-opt'), 'runtime must not reference the never-emitted .zl-quiz-opt class');
 });
 
 export default suite;

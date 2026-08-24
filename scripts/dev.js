@@ -34,6 +34,6 @@ const server = createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(\`Zolto Studio  →  http://localhost:\${PORT}\`);
+  console.log(`Zolto Studio  →  http://localhost:${PORT}`);
   console.log('Press Ctrl+C to stop.');
 });

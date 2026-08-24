@@ -68,6 +68,7 @@ function mml(n) {
     case 'Accent':             return mmlAccent(n);
     case 'Bold':               return `<mstyle mathvariant="bold">${mml(n.children[0])}</mstyle>`;
     case 'Blackboard':       return `<mi mathvariant="double-struck">${esc(n.char)}</mi>`;
+    case 'Script':           return `<mi mathvariant="script">${esc(n.char)}</mi>`;
     default:                   return '';
   }
 }

@@ -6,9 +6,9 @@
  */
 import { runAllTests } from '../tests/tests.js';
 
-const { results, passed, failed, total } = runAllTests();
+const { results, passed, failed, total } = await runAllTests();
 for (const r of results)
-  if (!r.pass) console.error(\`  ✗ [\${r.suite}] \${r.desc}\n    \${r.error?.split('\n')[0]}\`);
+  if (!r.pass) console.error(`  ✗ [${r.suite}] ${r.desc}\n    ${r.error?.split('\n')[0]}`);
 
-console.log(\`\n\${passed}/\${total} passed\${failed ? \`, \${failed} failed\` : ' — all green ✓'}\`);
+console.log(`\n${passed}/${total} passed${failed ? `, ${failed} failed` : ' — all green ✓'}`);
 process.exit(failed > 0 ? 1 : 0);

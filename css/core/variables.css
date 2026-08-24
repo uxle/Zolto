@@ -34,12 +34,15 @@
   --text-tertiary: #5C6270;
 
   /* Spacing */
+  --space-2xs: 2px;
+  --space-xs: 4px;
   --space-1: 8px;
   --space-2: 16px;
   --space-3: 24px;
   --space-4: 32px;
   --space-5: 40px;
   --space-6: 48px;
+  --space-7: 56px;
   --space-8: 64px;
 
   /* Radii */
