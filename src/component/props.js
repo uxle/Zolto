@@ -70,6 +70,34 @@ export function parsePropDeclaration(declStr) {
   };
 }
 
+// Split a comma-separated literal-list body (the inside of `[...]` or
+// `{...}`) on top-level commas only — skipping over commas that appear
+// inside a quoted string. The previous plain `.split(',')` broke on any
+// comma embedded in a quoted array/object value: `["a,b", "c"]` split
+// into three broken fragments instead of two clean elements, and
+// `{name="Smith, John"}` lost the `name` key entirely and produced two
+// garbage keys from the two halves of the split string.
+function splitTopLevelCommas(s) {
+  const parts = [];
+  let depth = 0, quote = null, current = '';
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (quote) {
+      current += c;
+      if (c === '\\') { i++; if (i < s.length) current += s[i]; continue; }
+      if (c === quote) quote = null;
+      continue;
+    }
+    if (c === '"' || c === "'") { quote = c; current += c; continue; }
+    if (c === '[' || c === '{') { depth++; current += c; continue; }
+    if (c === ']' || c === '}') { depth--; current += c; continue; }
+    if (c === ',' && depth === 0) { parts.push(current); current = ''; continue; }
+    current += c;
+  }
+  if (current.trim() !== '') parts.push(current);
+  return parts;
+}
+
 export function parseLiteralValue(valStr) {
   if (valStr === undefined || valStr === null) return null;
   const s = String(valStr).trim();
@@ -85,7 +113,7 @@ export function parseLiteralValue(valStr) {
 
   if (s.startsWith('[') && s.endsWith(']')) {
     try {
-      const items = s.slice(1, -1).split(',').map(x => parseLiteralValue(x));
+      const items = splitTopLevelCommas(s.slice(1, -1)).map(x => parseLiteralValue(x));
       return items.filter(x => x !== null && x !== '');
     } catch {
       return [];
@@ -95,9 +123,12 @@ export function parseLiteralValue(valStr) {
   if (s.startsWith('{') && s.endsWith('}')) {
     try {
       const obj = {};
-      const pairs = s.slice(1, -1).split(',');
+      const pairs = splitTopLevelCommas(s.slice(1, -1));
       for (const p of pairs) {
-        const [k, v] = p.split('=').map(x => x.trim());
+        const eqIdx = p.indexOf('=');
+        if (eqIdx === -1) continue;
+        const k = p.slice(0, eqIdx).trim();
+        const v = p.slice(eqIdx + 1).trim();
         if (k) obj[k] = parseLiteralValue(v);
       }
       return obj;

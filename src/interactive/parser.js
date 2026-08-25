@@ -181,7 +181,7 @@ function parseInteractive(p) {
 function parseForm(p) {
   const tok = p.advance();
   const rawValue = tok.value || '';
-  const name = rawValue.replace(/\s*\{.*/, '').trim() || 'form';
+  const name = stripTrailingDirectiveNoise(rawValue) || 'form';
   p.skipNewlines();
   p.matchBrace();
   const children = [];
@@ -285,7 +285,7 @@ function parseCheckbox(p) {
 
 function parseRadioGroup(p) {
   const tok = p.advance();
-  const name = (tok.value || '').replace(/\s*\{.*/, '').trim() || 'radio';
+  const name = stripTrailingDirectiveNoise(tok.value) || 'radio';
   p.skipNewlines();
   p.matchBrace();
   const options = [];
@@ -308,9 +308,10 @@ function parseRadioGroup(p) {
 function parseSelect(p) {
   const tok = p.advance();
   const rawVal = tok.value || '';
-  const name = rawVal.replace(/\s*(multi|searchable|\{).*/i, '').trim() || 'select';
-  const multi = /multi/i.test(rawVal);
-  const searchable = /searchable/i.test(rawVal);
+  const name = stripTrailingDirectiveNoise(rawVal) || 'select';
+  const modifiers = trailingModifierRegion(rawVal);
+  const multi = /multi/i.test(modifiers);
+  const searchable = /searchable/i.test(modifiers);
   p.skipNewlines();
   p.matchBrace();
   const options = [];
@@ -340,7 +341,7 @@ function parseToggle(p, subtype) {
 
 function parseSegment(p) {
   const tok = p.advance();
-  const name = (tok.value || '').replace(/\s*\{.*/, '').trim() || 'segment';
+  const name = stripTrailingDirectiveNoise(tok.value) || 'segment';
   p.skipNewlines();
   p.matchBrace();
   const items = [];
@@ -392,7 +393,7 @@ function parseProgress(p) {
 
 function parseQuiz(p) {
   const tok = p.advance();
-  const rawTitle = (tok.value || '').replace(/\s*\{.*/, '').trim();
+  const rawTitle = stripTrailingDirectiveNoise(tok.value);
   const title = rawTitle.startsWith('"') ? rawTitle.slice(1, -1) : rawTitle;
   p.skipNewlines();
   p.matchBrace();
@@ -410,7 +411,7 @@ function parseQuiz(p) {
 
 function parseMCQ(p, multi) {
   const tok = p.advance();
-  const rawQ = (tok.value || '').replace(/\s*\{.*/, '').trim();
+  const rawQ = stripTrailingDirectiveNoise(tok.value);
   const question = rawQ.startsWith('"') ? rawQ.slice(1, -1) : rawQ;
   p.skipNewlines();
   p.matchBrace();
@@ -486,7 +487,7 @@ function parseFillBlank(p) {
 
 function parseMatching(p) {
   const tok = p.advance();
-  const question = stripQuotes((tok.value || '').replace(/\{/, '').trim());
+  const question = stripQuotes(stripTrailingDirectiveNoise(tok.value));
   p.skipNewlines();
   p.matchBrace();
   const pairs = [];
@@ -505,7 +506,7 @@ function parseMatching(p) {
 
 function parseMatrix(p) {
   const tok = p.advance();
-  const question = stripQuotes((tok.value || '').replace(/\{/, '').trim());
+  const question = stripQuotes(stripTrailingDirectiveNoise(tok.value));
   p.skipNewlines();
   p.matchBrace();
   const rawLines = [];
@@ -547,7 +548,7 @@ function parseTimer(p) {
 
 function parseDeck(p) {
   const tok = p.advance();
-  const name = (tok.value || '').replace(/\{/, '').trim() || 'deck';
+  const name = stripTrailingDirectiveNoise(tok.value) || 'deck';
   p.skipNewlines();
   p.matchBrace();
   const cards = [];
@@ -581,8 +582,8 @@ function parseDeck(p) {
 function parsePoll(p) {
   const tok = p.advance();
   const rawVal = tok.value || '';
-  const multi = /multi/i.test(rawVal);
-  const question = stripQuotes(rawVal.replace(/\s*multi\s*/i, '').replace(/\{/, '').trim());
+  const multi = /multi/i.test(trailingModifierRegion(rawVal));
+  const question = stripQuotes(stripTrailingDirectiveNoise(rawVal));
   p.skipNewlines();
   p.matchBrace();
   const options = [];
@@ -712,6 +713,64 @@ function parseState(p, scope) {
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+
+// BUG (systemic, ~11 call sites): directive title/name/question values were
+// extracted with regexes like `.replace(/\s*\{.*/, '')` or `.replace(/\{/, '')`
+// to strip the trailing block-opening `{` (e.g. `@mcq "Question" {` →
+// `"Question"`). None of these were quote-aware — they truncated at the
+// FIRST `{` anywhere in the string, including one legitimately quoted inside
+// the title/question text itself, silently corrupting it (and, compounding
+// further, `.slice(1, -1)` afterwards would then chop off a real trailing
+// character too, since the genuine closing quote had already been deleted).
+// This made it impossible to write a literal `{` in any question/title —
+// including the `{varName}` data-binding placeholder syntax
+// (src/interactive/bindings.js) this language was clearly designed to
+// support, which is presumably *why* that feature is never actually
+// exercised anywhere in this codebase.
+//
+// This finds the real trailing noise (a block-opener, and for a couple of
+// directives, bare modifier keywords like `multi`/`searchable`) by first
+// locating the matching closing quote — if the value is quoted at all —
+// and only treating text *after* that quote as strippable, so a `{` (or
+// the word "multi") inside the quoted text itself is left alone.
+function stripTrailingDirectiveNoise(raw) {
+  const s = (raw || '').trimStart();
+  const quote = s[0];
+  if (quote === '"' || quote === "'") {
+    let i = 1;
+    while (i < s.length) {
+      if (s[i] === '\\') { i += 2; continue; }
+      if (s[i] === quote) return s.slice(0, i + 1).trim();
+      i++;
+    }
+    // Unterminated quote — nothing trustworthy after this point to strip;
+    // return as-is rather than guess where the "real" content ends.
+    return s.trim();
+  }
+  // Not quoted (a bare identifier) — no quote boundary to respect, so the
+  // original cut-at-first-marker behavior is fine here.
+  return s.replace(/\s*(multi|searchable|\{).*/i, '').trim();
+}
+
+// The part of a directive's raw value that comes *after* its quoted
+// title/question, if any — where modifier keywords like `multi`/
+// `searchable` actually live. Testing /multi/i against the whole raw
+// string (as this parser used to) gives a false positive for any title
+// that merely contains the word "multiple", "multitask", etc.
+function trailingModifierRegion(raw) {
+  const s = (raw || '').trimStart();
+  const quote = s[0];
+  if (quote === '"' || quote === "'") {
+    let i = 1;
+    while (i < s.length) {
+      if (s[i] === '\\') { i += 2; continue; }
+      if (s[i] === quote) return s.slice(i + 1);
+      i++;
+    }
+    return ''; // unterminated quote — no trustworthy modifier region
+  }
+  return s;
+}
 
 function stripQuotes(s) {
   if (!s) return '';

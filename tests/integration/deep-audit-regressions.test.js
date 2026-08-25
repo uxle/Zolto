@@ -12,6 +12,7 @@ import { parseAnimationSource } from '../../src/animation/parser.js';
 import { ComponentRegistry } from '../../src/component/registry.js';
 import { renderComponentNode } from '../../src/component/renderer.js';
 import { expandMacro } from '../../src/component/macros.js';
+import { parseLiteralValue } from '../../src/component/props.js';
 import { parseComponent, renderComponent } from '../../src/zolto.js';
 import { parseInteractive, renderInteractive } from '../../src/interactive/index.js';
 import { parseInteractiveSource } from '../../src/interactive/parser.js';
@@ -265,6 +266,57 @@ suite.test('BUG: the export runtime was a hand-duplicated copy of the live-app r
   // ZOLTO_RUNTIME_JS must be *derived* from the one real, importable,
   // testable function via Function.prototype.toString(), not restated.
   eq(ZOLTO_RUNTIME_JS, initZoltoInteractivity.toString(), 'the exported runtime string must be produced from the canonical function, not a separate hand-written copy');
+});
+
+suite.test('BUG: any directive title/question containing a literal "{" was silently truncated and corrupted', () => {
+  // Every directive that captures a quoted title/question (@mcq, @quiz,
+  // @form, @select, @poll, @deck, @radio, @segment, @matching, @matrix)
+  // stripped the trailing block-opening `{` with a non-quote-aware regex
+  // like `.replace(/\s*\{.*/, '')`. It cut at the FIRST `{` anywhere in
+  // the string — including one legitimately inside the quoted text —
+  // and then a subsequent `.slice(1, -1)` (assuming the last character
+  // was the closing quote) chopped off a real trailing character too,
+  // since the genuine closing quote had already been deleted.
+  const mcq = parseInteractiveSource('@mcq "Your score is {score} out of 10" {\n@correct "A"\n@choice "B"\n}')[0];
+  eq(mcq.question, 'Your score is {score} out of 10');
+
+  const quiz = parseInteractiveSource('@quiz "Math {formula} test" {\n@mcq "Q" {\n@correct "A"\n@choice "B"\n}\n}')[0];
+  eq(quiz.title, 'Math {formula} test');
+
+  const poll = parseInteractiveSource('@poll "How {many} do you like?" {\nA\nB\n}')[0];
+  eq(poll.question, 'How {many} do you like?');
+});
+
+suite.test('BUG: @select falsely detected the "multi" modifier from titles merely containing the word "multiple"', () => {
+  // `const multi = /multi/i.test(rawVal)` tested the ENTIRE raw captured
+  // value, including inside the quoted label — so a select titled
+  // "Choose your multiple items" was incorrectly flagged multi:true even
+  // though the actual `multi` modifier keyword was never written.
+  const falsePositive = parseInteractiveSource('@select "Choose your multiple items" {\n@option "A"\n}')[0];
+  eq(falsePositive.multi, false, 'a title merely containing the word "multiple" must not enable multi-select');
+
+  const realMulti = parseInteractiveSource('@select "Pick" multi searchable {\n@option "A"\n}')[0];
+  eq(realMulti.multi, true);
+  eq(realMulti.searchable, true);
+  eq(realMulti.name, '"Pick"');
+});
+
+suite.test('BUG: component array/object prop literals broke on commas inside quoted values', () => {
+  // parseLiteralValue() used a plain `.split(',')` on the inside of
+  // `[...]`/`{...}` literals — any comma inside a quoted string value
+  // was treated as a list separator. `["a,b", "c"]` split into three
+  // broken fragments instead of two clean elements, and
+  // `{name="Smith, John", age=30}` lost the `name` key entirely,
+  // producing two garbage keys from the two halves of the split string.
+  eq(JSON.stringify(parseLiteralValue('["a,b", "c"]')), JSON.stringify(['a,b', 'c']));
+  eq(JSON.stringify(parseLiteralValue('{name="Smith, John", age=30}')), JSON.stringify({ name: 'Smith, John', age: 30 }));
+});
+
+suite.test('BUG: component object prop values containing "=" were silently truncated', () => {
+  // `p.split('=').map(x => x.trim())` destructured into exactly two
+  // parts — a value like a URL query string containing its own `=`
+  // signs lost everything after the second `=`.
+  eq(JSON.stringify(parseLiteralValue('{url="http://x.com?a=b"}')), JSON.stringify({ url: 'http://x.com?a=b' }));
 });
 
 export default suite;

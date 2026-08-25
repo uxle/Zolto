@@ -192,3 +192,77 @@ missing-file `validate`), not just read through.
 
 Ten new regression tests cover this section's fixes, for 889/889 total,
 stable across repeated runs.
+
+## Round 4c — "again and again": systemic quote-unaware truncation bugs
+
+### The most severe finding of this pass
+**Any directive title/question containing a literal `{` character was
+silently corrupted**, across ~11 call sites in `src/interactive/parser.js`
+(`@mcq`, `@quiz`, `@form`, `@select`, `@poll`, `@deck`, `@radio`, `@segment`,
+`@matching`, `@matrix`). Each stripped the trailing block-opening `{` (e.g.
+`@mcq "Question" {` → `"Question"`) with a regex like
+`.replace(/\s*\{.*/, '')` that had no awareness of quote boundaries — it
+cut at the **first** `{` anywhere in the string, including one legitimately
+inside the quoted text. Worse, a subsequent `.slice(1, -1)` (assuming the
+last character was the closing quote) then chopped off a real trailing
+character too, since the genuine closing quote had already been deleted by
+the first bug. `@mcq "Your score is {score} out of 10"` rendered as the
+literal question text **"Your score i"**.
+
+This also explains a mystery from the last audit round: `src/interactive/
+state.js` and `bindings.js` implement a careful, safety-conscious
+`{varName}` data-binding/interpolation system that's never actually called
+from anywhere in the renderer. It's not just unwired — until this fix, you
+couldn't even get a `{varName}` placeholder to *survive parsing* inside a
+question or title, since it would trigger this exact corruption. Whether to
+build the render-time wiring for that system is a separate, larger product
+decision (documented as an open question below, not fixed here) — but the
+parsing corruption blocking it outright is fixed.
+
+Fixed with two quote-aware helpers (`stripTrailingDirectiveNoise`,
+`trailingModifierRegion` in `parser.js`) that find the real closing quote
+first and only treat text *after* it as strippable noise, replacing all
+~11 call sites.
+
+### A second bug in the same function, same root cause
+`@select`'s `multi`/`searchable` modifier detection tested
+`/multi/i.test(rawVal)` against the **entire** raw captured value,
+including inside the quoted label. `@select "Choose your multiple items"`
+was silently flagged `multi: true` even though the `multi` modifier
+keyword was never written — purely because the label contains the
+substring "multiple". Fixed by scoping the regex test to only the region
+after the closing quote.
+
+### A parallel bug in a completely different subsystem
+`src/component/props.js`'s `parseLiteralValue()` (parses `[...]`/`{...}`
+literal values for `@component` prop declarations) used a plain
+`.split(',')` on the inside of array/object literals — any comma inside a
+quoted string value was treated as a list separator:
+- `["a,b", "c"]` parsed as **three** broken fragments instead of two
+  clean elements.
+- `{name="Smith, John", age=30}` **lost the `name` key entirely**,
+  producing two garbage keys (`"Smith` and `John"`) from the two halves of
+  the incorrectly-split string.
+
+Separately, the object-parsing branch's `p.split('=').map(...)` destructured
+into exactly two parts, silently truncating any value containing more than
+one `=` (e.g. a URL query string like `url="http://x.com?a=b"` lost
+everything after the second `=`).
+
+Fixed with a proper quote-aware `splitTopLevelCommas()` helper (tracks
+quote state and bracket depth character-by-character) and switched the
+key/value split to `indexOf('=')` (first occurrence only) instead of
+`.split('=')`.
+
+### Swept for the same bug class elsewhere — mostly already safe
+Checked every other `.slice(1, -1)` call site in `src/` for the same
+"assume the last character is a closing quote without checking" mistake:
+`src/tokenizer.js` (YAML frontmatter), `src/inline-parser.js` (inline code
+padding), `src/component/props.js` (prop expression unwrapping), and
+`src/plugin/manifest.js` (its own array parsing) were all already properly
+guarded with `startsWith(...) && endsWith(...)` checks or, in the plugin
+manifest's case, already-correct character-by-character quote tracking —
+no further instances of this bug class found.
+
+Six new regression tests, one covering four separate directive types at
+once. 896/896 total, stable across 6 repeated runs.
